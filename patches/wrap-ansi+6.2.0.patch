@@ -1,0 +1,12 @@
+diff --git a/node_modules/wrap-ansi/index.js b/node_modules/wrap-ansi/index.js
+index a6e5443..70136e4 100644
+--- a/node_modules/wrap-ansi/index.js
++++ b/node_modules/wrap-ansi/index.js
+@@ -1,5 +1,6 @@
+ 'use strict';
+-const stringWidth = require('string-width');
++// const stringWidth = require('string-width');
++import stringWidth from 'string-width';
+ const stripAnsi = require('strip-ansi');
+ const ansiStyles = require('ansi-styles');
+ 

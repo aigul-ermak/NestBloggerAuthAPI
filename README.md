@@ -1,3 +1,3 @@
-# Blogger Platform - Sprint 4, Week 3
+# Blogger Platform - Sprint 4, Week 4
 
 ## Overview

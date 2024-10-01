@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
         }
 
         const token = authorization.split(' ')[1];
-        console.log(token);
+
         if (!token) {
             throw new UnauthorizedException();
         }
@@ -35,7 +35,11 @@ export class AuthGuard implements CanActivate {
             console.log(payload)
 
         } catch {
-            throw new UnauthorizedException();
+            // throw new UnauthorizedException();
+            if (Error.name === 'TokenExpiredError') {
+                throw new UnauthorizedException('Token has expired');
+            }
+            throw new UnauthorizedException('Invalid token');
         }
         return true;
     }

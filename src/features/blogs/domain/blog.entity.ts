@@ -5,8 +5,6 @@ export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
-    @Prop()
-    login: string;
 
     @Prop({required: true})
     name: string;

@@ -6,12 +6,13 @@ import {
     Post,
     Req,
     Res,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
-import {Response} from 'express';
+
+import {Request, Response} from 'express';
 import {UserLoginDto} from "./models/input/login-user.input.dto";
 import {CreateUserDto} from "../../users/api/models/input/create-user.input.dto";
-import {AuthGuard} from "../../../infrastructure/guards/auth.guard";
 import {ResendEmailDto} from "../../email/models/input/email.input.dto";
 import {CommandBus} from "@nestjs/cqrs";
 import {LoginUserUseCaseCommand} from "../../usecases/loginUserUseCase";
@@ -19,6 +20,9 @@ import {ConfirmEmailUseCaseCommand} from "../../usecases/confirmEmailUseCase";
 import {CreateUserRegistrationUseCaseCommand} from "../../usecases/createUserRegistrationUseCase";
 import {SendNewCodeToEmailUseCaseCommand} from "../../usecases/sendNewCodeToEmailUseCase";
 import {GetMeUseCaseCommand} from "../../usecases/getMeUseCase";
+import {LogoutUserUseCaseCommand} from "../../usecases/logoutUserUseCase";
+import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
+import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.guard";
 
 
 @Controller('auth')
@@ -96,19 +100,45 @@ export class AuthController {
 
     }
 
-    @UseGuards(AuthGuard)
+
     @Get('/me')
     @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
     async getUser(
-        @Req() req: Request
+        @Req() request: Request
     ) {
-        const userId = req['user']?.id;
-
-        const userLogin = req['user'].login;
+        const userId = request['userId'];
+        console.log(userId)
 
         const result = this.commandBus.execute(new GetMeUseCaseCommand(userId));
 
         return result;
+    }
+
+    @Post('/logout')
+    @HttpCode(204)
+    @UseGuards(RefreshTokenGuard)
+    async logoutUser(
+        @Req() req: Request, @Res() res: Response) {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            throw new UnauthorizedException('No refresh token found');
+        }
+
+        console.log('User ID:', req['userId']);
+        console.log('User IP:', req['userIP']);
+        console.log('User Device:', req['userDevice']);
+        console.log('User Agent:', req['userAgent']);
+
+        await this.commandBus.execute(new LogoutUserUseCaseCommand(refreshToken));
+
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+        });
+
     }
 }
 

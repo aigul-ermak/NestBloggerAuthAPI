@@ -8,7 +8,6 @@ import {v4 as uuidv4} from 'uuid';
 import {CreateUserDto} from "../../users/api/models/input/create-user.input.dto";
 import bcrypt from "bcrypt";
 import * as dateFns from "date-fns";
-import {jwtAccessConstants, jwtRefreshConstants} from "../constants";
 import {UserWithIdOutputModel} from "../../users/api/models/output/user.output.model";
 import {UserDBModel} from "../../users/api/models/input/user-db.input.model";
 import {UserLoginDto} from "../api/models/input/login-user.input.dto";
@@ -66,14 +65,15 @@ export class AuthService {
 
         const accessToken = this.jwtService.sign(payload)
 
-        const refreshToken = this.jwtService.sign({
-            id: user.id,
-            userIP,
-            userDevice,
-            userAgent
-        }, {secret: jwtRefreshConstants.jwt_secret, expiresIn: jwtRefreshConstants.refresh_token_expiry});
+        // const refreshToken = this.jwtService.sign({
+        //     id: user.id,
+        //     userIP,
+        //     userDevice,
+        //     userAgent
+        // }, {secret: jwtRefreshConstants.jwt_secret, expiresIn: jwtRefreshConstants.refresh_token_expiry});
 
-        return {accessToken, refreshToken};
+        //return {accessToken, refreshToken};
+        return {accessToken};
     }
 
     async createUser(createUserDto: CreateUserDto) {

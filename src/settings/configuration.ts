@@ -43,6 +43,14 @@ const getConfig = (
             BASIC_AUTH_USERNAME: environmentVariables.HTTP_BASIC_USER,
             BASIC_AUTH_PASSWORD: environmentVariables.HTTP_BASIC_PASS,
         },
+
+        jwtSettings: {
+            JWT_ACCESS_SECRET: environmentVariables.JWT_ACCESS_SECRET || '123',
+            JWT_REFRESH_SECRET: environmentVariables.JWT_REFRESH_SECRET || '12345',
+            ACCESS_TOKEN_EXPIRY: environmentVariables.ACCESS_TOKEN_EXPIRY || '10s',
+            REFRESH_TOKEN_EXPIRY: environmentVariables.REFRESH_TOKEN_EXPIRY || '20s',
+        },
+
     };
 };
 

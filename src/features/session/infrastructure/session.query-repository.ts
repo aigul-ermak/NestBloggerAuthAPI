@@ -8,4 +8,9 @@ export class SessionQueryRepository {
     constructor(@InjectModel(Session.name) private sessionModel: Model<SessionDocument>) {
     }
 
+    async getUserSession(userId: string, deviceId: string) {
+
+        return this.sessionModel.findOne({userId, deviceId});
+
+    }
 }

@@ -2,12 +2,15 @@ import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {UsersRepository} from "../users/infrastructure/users.repository";
 import {UsersQueryRepository} from "../users/infrastructure/users.query-repository";
 import {JwtService} from "@nestjs/jwt";
-import {RefreshToken} from "../users/api/models/input/refresh-token.model";
+import {SessionRepository} from "../session/infrastructure/session.repository";
+import {SessionQueryRepository} from "../session/infrastructure/session.query-repository";
+import {UnauthorizedException} from "@nestjs/common";
 
 
 export class LogoutUserUseCaseCommand {
     constructor(
-        public refreshToken: RefreshToken
+        public userId: string,
+        public deviceId: string
     ) {
     }
 }
@@ -18,30 +21,21 @@ export class LogoutUserUseCase implements ICommandHandler<LogoutUserUseCaseComma
         private usersRepository: UsersRepository,
         private usersQueryRepository: UsersQueryRepository,
         private jwtService: JwtService,
+        private sessionRepository: SessionRepository,
+        private sessionQueryRepository: SessionQueryRepository,
     ) {
     }
 
     async execute(command: LogoutUserUseCaseCommand) {
 
-        // const payload: RefreshToken | null = this.jwtService.decode(command.refreshToken.expDate) as RefreshToken;
-        //
-        //
-        // if (!payload) {
-        //     throw new UnauthorizedException('Invalid refresh token');
-        // }
 
-        // const userId: string = payload.userId;
-        // const deviceId: string = payload.deviceId;
+        const session = await this.sessionQueryRepository.getUserSession(command.userId, command.deviceId);
 
-        // console.log({userId, deviceId})
-        console.log('inside use case')
+        if (!session) {
+            throw new UnauthorizedException('Session not found');
+        }
 
-        //const result = await this.querySecurityRepo.deleteSessionFromList(userId, deviceId);
-
-
-        // if (!result) {
-        //     throw new UnauthorizedException('Failed to revoke refresh token');
-        // }
+        await this.sessionRepository.deleteSession(command.userId, command.deviceId)
 
         return true;
     }

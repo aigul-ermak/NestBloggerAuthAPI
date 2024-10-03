@@ -70,6 +70,10 @@ import {CreateUserRegistrationUseCase} from "./features/usecases/createUserRegis
 import {SendNewCodeToEmailUseCase} from "./features/usecases/sendNewCodeToEmailUseCase";
 import {GetMeUseCase} from "./features/usecases/getMeUseCase";
 import {LogoutUserUseCase} from "./features/usecases/logoutUserUseCase";
+import {Session, SessionEntity} from "./features/session/domain/session.entity";
+import {SessionModule} from "./features/session/session.module";
+import {SessionRepository} from "./features/session/infrastructure/session.repository";
+import {SessionQueryRepository} from "./features/session/infrastructure/session.query-repository";
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -113,7 +117,8 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
             {name: Post.name, schema: PostsEntity},
             {name: Like.name, schema: LikesEntity},
             {name: Comment.name, schema: CommentsEntity},
-            {name: LikeComment.name, schema: LikesCommentEntity}]
+            {name: LikeComment.name, schema: LikesCommentEntity},
+            {name: Session.name, schema: SessionEntity}]
         ),
 
         CqrsModule,
@@ -126,10 +131,12 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
         LikesModule,
         LikesCommentModule,
         CommentsModule,
+        SessionModule,
     ],
     providers: [...usersProviders, ...blogsProviders, AuthService, BlogsService, PostsService,
         LikesRepository, LikesQueryRepository, CommentsRepository, CommentsQueryRepository,
-        LikesCommentRepository, LikesCommentQueryRepository, UsersQueryRepository, ...useCases],
+        LikesCommentRepository, LikesCommentQueryRepository, UsersQueryRepository, SessionRepository,
+        SessionQueryRepository, ...useCases],
     controllers: [UsersController, AuthController, BlogsController, PostsController, CommentsController],
 })
 export class AppModule implements NestModule {

@@ -8,6 +8,7 @@ import {User, UsersEntity} from '../users/domain/users.entity';
 import {Like, LikesEntity} from "../likePost/domain/like.entity";
 import {Comment, CommentsEntity} from "../comments/domain/comment.entity";
 import {LikeComment, LikesCommentEntity} from "../likeComment/domain/like-comment.entity";
+import {Session, SessionEntity} from "../session/domain/session.entity";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import {LikeComment, LikesCommentEntity} from "../likeComment/domain/like-commen
         MongooseModule.forFeature([{name: Like.name, schema: LikesEntity}]),
         MongooseModule.forFeature([{name: Comment.name, schema: CommentsEntity}]),
         MongooseModule.forFeature([{name: LikeComment.name, schema: LikesCommentEntity}]),
+        MongooseModule.forFeature([{name: Session.name, schema: SessionEntity}]),
     ],
     controllers: [TestingController],
     providers: [TestingService],

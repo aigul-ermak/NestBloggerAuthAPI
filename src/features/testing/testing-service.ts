@@ -7,6 +7,7 @@ import {Post, PostDocument} from '../posts/domain/posts.entity';
 import {Like, LikeDocument} from "../likePost/domain/like.entity";
 import {Comment, CommentDocument} from "../comments/domain/comment.entity";
 import {LikeComment, LikeCommentDocument} from "../likeComment/domain/like-comment.entity";
+import {Session, SessionDocument} from "../session/domain/session.entity";
 
 @Injectable()
 export class TestingService {
@@ -17,6 +18,7 @@ export class TestingService {
         @InjectModel(Like.name) private likeModel: Model<LikeDocument>,
         @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
         @InjectModel(LikeComment.name) private likeCommentModel: Model<LikeCommentDocument>,
+        @InjectModel(Session.name) private sessionModel: Model<SessionDocument>,
     ) {
     }
 
@@ -27,5 +29,6 @@ export class TestingService {
         await this.likeModel.deleteMany({});
         await this.commentModel.deleteMany({});
         await this.likeCommentModel.deleteMany({});
+        await this.sessionModel.deleteMany({});
     }
 }

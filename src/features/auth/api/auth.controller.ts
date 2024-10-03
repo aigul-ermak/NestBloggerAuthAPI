@@ -108,9 +108,8 @@ export class AuthController {
     ) {
         const userId = request['userId'];
 
-        const result = this.commandBus.execute(new GetMeUseCaseCommand(userId));
-
-        return result;
+        return this.commandBus.execute(new GetMeUseCaseCommand(userId));
+        
     }
 
     @Post('/logout')
@@ -124,19 +123,17 @@ export class AuthController {
             throw new UnauthorizedException('No refresh token found');
         }
 
-        console.log('User ID:', req['userId']);
-        console.log('User IP:', req['userIP']);
-        console.log('User Device:', req['userDevice']);
-        console.log('User Agent:', req['userAgent']);
+        const userId = req['userId'];
+        const deviceId = req['userDevice'];
 
-        await this.commandBus.execute(new LogoutUserUseCaseCommand(refreshToken));
+        await this.commandBus.execute(new LogoutUserUseCaseCommand(userId, deviceId));
 
         res.clearCookie('refreshToken', {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
         });
-
+        res.send();
     }
 }
 

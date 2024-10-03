@@ -16,4 +16,11 @@ export class SessionRepository {
 
         return result._id.toString();
     }
+
+    async deleteSession(userId: string, deviceId: string) {
+
+        const result = await this.sessionModel.deleteOne({userId, deviceId});
+
+        return result.deletedCount > 0;
+    }
 }

@@ -39,13 +39,12 @@ export class AuthController {
                 @Res() res: Response,) {
 
         const userIP: string = "testuserip";
-        const userDevice: string = "testdeviceid";
         const userAgent: string = "user-agent";
 
         const {
             accessToken,
             refreshToken
-        } = await this.commandBus.execute(new LoginUserUseCaseCommand(loginDto, userIP, userDevice, userAgent));
+        } = await this.commandBus.execute(new LoginUserUseCaseCommand(loginDto, userIP, userAgent));
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -108,7 +107,6 @@ export class AuthController {
         @Req() request: Request
     ) {
         const userId = request['userId'];
-        console.log(userId)
 
         const result = this.commandBus.execute(new GetMeUseCaseCommand(userId));
 

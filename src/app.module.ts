@@ -74,6 +74,7 @@ import {Session, SessionEntity} from "./features/session/domain/session.entity";
 import {SessionModule} from "./features/session/session.module";
 import {SessionRepository} from "./features/session/infrastructure/session.repository";
 import {SessionQueryRepository} from "./features/session/infrastructure/session.query-repository";
+import {RefreshTokensUseCase} from "./features/usecases/refreshTokensUserUseCase";
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -84,7 +85,7 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
     CreateLikeForPostUseCase, GetCommentsForPostUseCase, CreateCommentForPostUseCase,
     CreateLikeForCommentUseCase, GetCommentByIdUseCase, DeleteCommentByIdUseCase, UpdateCommentUseCase,
     GetAllUsersUseCase, DeleteUserByIdUseCase, LoginUserUseCase, ConfirmEmailUseCase, CreateUserRegistrationUseCase,
-    SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase]
+    SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase, RefreshTokensUseCase]
 
 @Module({
     imports: [

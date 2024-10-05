@@ -17,6 +17,19 @@ export class SessionRepository {
         return result._id.toString();
     }
 
+    async updateSession(sessionUser: any) {
+
+        const filter = {userId: sessionUser.userIP, deviceId: sessionUser.deviceId};
+        const updateDoc = {
+            $set: {
+                iatDate: sessionUser.iatDate,
+                expDate: sessionUser.expDate
+            }
+        };
+        return await this.sessionModel.updateOne(filter, updateDoc);
+
+    }
+
     async deleteSession(userId: string, deviceId: string) {
 
         const result = await this.sessionModel.deleteOne({userId, deviceId});

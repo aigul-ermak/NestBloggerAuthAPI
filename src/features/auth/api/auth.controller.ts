@@ -23,6 +23,7 @@ import {GetMeUseCaseCommand} from "../../usecases/getMeUseCase";
 import {LogoutUserUseCaseCommand} from "../../usecases/logoutUserUseCase";
 import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
 import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.guard";
+import {RefreshTokensUseCaseCommand} from "../../usecases/refreshTokensUserUseCase";
 
 
 @Controller('auth')
@@ -91,6 +92,38 @@ export class AuthController {
 
     }
 
+
+    @Post('/refresh-token')
+    @HttpCode(200)
+    @UseGuards(RefreshTokenGuard)
+    async refreshToken(
+        @Req() request: Request,
+        @Res() res: Response) {
+
+        const userId = request['userId'];
+        const deviceId = request['userDevice'];
+        const userIP = request['userIP'];
+        const userAgent = request['userAgent'];
+
+        const {
+            accessToken,
+            refreshToken
+        } = await this.commandBus.execute(new RefreshTokensUseCaseCommand(userId, deviceId, userIP, userAgent));
+
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        console.log("accessToken", accessToken)
+        console.log("refreshToken", refreshToken)
+
+        return res.json({accessToken});
+    }
+
     @Post('/registration-email-resending')
     @HttpCode(204)
     async sendNewCodeToEmail(@Body() resendEmailDto: ResendEmailDto) {
@@ -109,7 +142,7 @@ export class AuthController {
         const userId = request['userId'];
 
         return this.commandBus.execute(new GetMeUseCaseCommand(userId));
-        
+
     }
 
     @Post('/logout')
@@ -117,11 +150,11 @@ export class AuthController {
     @UseGuards(RefreshTokenGuard)
     async logoutUser(
         @Req() req: Request, @Res() res: Response) {
-        const refreshToken = req.cookies.refreshToken;
-
-        if (!refreshToken) {
-            throw new UnauthorizedException('No refresh token found');
-        }
+        // const refreshToken = req.cookies.refreshToken;
+        //
+        // if (!refreshToken) {
+        //     throw new UnauthorizedException('No refresh token found');
+        // }
 
         const userId = req['userId'];
         const deviceId = req['userDevice'];

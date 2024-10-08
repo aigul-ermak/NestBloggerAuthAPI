@@ -19,14 +19,16 @@ export class SessionRepository {
 
     async updateSession(sessionUser: any) {
 
-        const filter = {userId: sessionUser.userIP, deviceId: sessionUser.deviceId};
+        const filter = {userId: sessionUser.userId, deviceId: sessionUser.deviceId};
         const updateDoc = {
             $set: {
                 iatDate: sessionUser.iatDate,
                 expDate: sessionUser.expDate
             }
         };
-        return await this.sessionModel.updateOne(filter, updateDoc);
+        const updateResult = await this.sessionModel.updateOne(filter, updateDoc);
+
+        return updateResult;
 
     }
 

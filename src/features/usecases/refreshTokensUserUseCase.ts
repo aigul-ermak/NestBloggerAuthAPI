@@ -1,5 +1,4 @@
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {UsersRepository} from "../users/infrastructure/users.repository";
 import {UsersQueryRepository} from "../users/infrastructure/users.query-repository";
 import {UnauthorizedException} from "@nestjs/common";
 import bcrypt from "bcrypt";

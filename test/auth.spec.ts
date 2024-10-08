@@ -1,15 +1,16 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
-
-const request = require('supertest');
 import {AppModule} from './../src/app.module';
 import {applyAppSettings} from "../src/settings/apply.app.setting";
+import {usersTestingModule} from "./helpers/usersTestingModule";
+
+const request = require('supertest');
 
 
 const HTTP_BASIC_USER = process.env.HTTP_BASIC_USER as string;
 const HTTP_BASIC_PASS = process.env.HTTP_BASIC_PASS as string;
 
-const getBasicAuthHeader = (username: string, password: string) => {
+export const getBasicAuthHeader = (username: string, password: string) => {
     const base64Credentials = Buffer.from(`${username}:${password}`).toString('base64');
     return `Basic ${base64Credentials}`;
 };
@@ -127,6 +128,46 @@ describe('Auth testing', () => {
 
     });
 
+    it('POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401', async () => {
+
+        const userDto = await usersTestingModule.createUser(httpServer)
+
+        const userLogin = await request(httpServer)
+            .post(`/auth/login`)
+            .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
+            .send({
+                loginOrEmail: userDto.login,
+                password: userDto.password
+            })
+            .expect(200);
+
+        const accessToken = userLogin.body.accessToken
+        const cookie = userLogin.headers['set-cookie']
+        console.log(cookie, " refresh")
+
+        await request(httpServer)
+            .post('/auth/refresh-token')
+            .set('Cookie', cookie)
+            .send({})
+            .expect(200)
+
+        const delay = (milliseconds: number) => new Promise((resolve, reject): void => {
+            setTimeout(() => {
+                resolve(1)
+            }, milliseconds)
+        })
+
+        await delay(2000)
+
+        await request(httpServer)
+            .post('/auth/refresh-token')
+            .set('Cookie', cookie)
+            .send({})
+            .expect(401)
+
+    });
+
+
     it('return 401 for login user: wrong email', async () => {
 
         const userLoginDto = {
@@ -187,7 +228,6 @@ describe('Auth testing', () => {
 
     });
 
-
     it('return 400 for user registration', async () => {
 
         const userRegistrationDto = {
@@ -223,10 +263,9 @@ describe('Auth testing', () => {
 
     });
 
-
     it('return 429 for user registration', async () => {
 
-       
+
     });
 
 

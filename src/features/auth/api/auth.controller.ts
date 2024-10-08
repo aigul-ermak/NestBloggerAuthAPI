@@ -1,14 +1,4 @@
-import {
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    Post,
-    Req,
-    Res,
-    UnauthorizedException,
-    UseGuards,
-} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards,} from '@nestjs/common';
 
 import {Request, Response} from 'express';
 import {UserLoginDto} from "./models/input/login-user.input.dto";
@@ -117,9 +107,6 @@ export class AuthController {
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-
-        console.log("accessToken", accessToken)
-        console.log("refreshToken", refreshToken)
 
         return res.json({accessToken});
     }

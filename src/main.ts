@@ -13,7 +13,6 @@ async function bootstrap() {
 
     applyAppSettings(app);
 
-    app.use(cookieParser());
 
     const configService = app.get(ConfigService<ConfigurationType, true>);
 

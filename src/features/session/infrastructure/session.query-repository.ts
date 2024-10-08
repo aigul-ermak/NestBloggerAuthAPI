@@ -10,7 +10,7 @@ export class SessionQueryRepository {
 
     async getUserSession(userId: string, deviceId: string) {
 
-        return this.sessionModel.findOne({userId, deviceId});
+        return this.sessionModel.findOne({userId, deviceId}).exec();
 
     }
 }

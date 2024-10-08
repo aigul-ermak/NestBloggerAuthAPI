@@ -28,7 +28,6 @@ export class LogoutUserUseCase implements ICommandHandler<LogoutUserUseCaseComma
 
     async execute(command: LogoutUserUseCaseCommand) {
 
-
         const session = await this.sessionQueryRepository.getUserSession(command.userId, command.deviceId);
 
         if (!session) {

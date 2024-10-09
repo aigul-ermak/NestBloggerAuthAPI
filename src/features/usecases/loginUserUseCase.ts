@@ -38,7 +38,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
         const refreshSecret = this.configService.get<string>('jwtSettings.JWT_REFRESH_SECRET');
         const refreshExpiry = this.configService.get<string>('jwtSettings.REFRESH_TOKEN_EXPIRY');
 
-        const userDevice = uuidv4();
+        const userDeviceId = uuidv4();
 
         const user = await this.validateUser(
             command.loginDto.loginOrEmail,
@@ -55,7 +55,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
         const refreshToken = this.jwtService.sign({
             id: user.id,
             userIP: command.userIP,
-            userDevice: userDevice,
+            userDeviceId: userDeviceId,
             userAgent: command.userAgent
 
         }, {secret: refreshSecret, expiresIn: refreshExpiry});
@@ -73,7 +73,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
 
         const sessionUser = {
             userId: user.id,
-            deviceId: userDevice,
+            deviceId: userDeviceId,
             ip: command.userIP,
             title: command.userAgent,
             iatDate: iatDate,

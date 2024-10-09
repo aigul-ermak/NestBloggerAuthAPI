@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {UsersModule} from "../users/users.module";
 import {AuthService} from "./application/auth.service";
-import {JwtModule, JwtService} from "@nestjs/jwt";
+import {JwtModule} from "@nestjs/jwt";
 import {LocalStrategy} from "../../infrastructure/guards/local.strategy";
 import {BasicStrategy} from "../../infrastructure/guards/basic.strategy";
 import {EmailModule} from "../email/email.module";

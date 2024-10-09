@@ -41,7 +41,7 @@ export class RefreshTokensUseCase implements ICommandHandler<RefreshTokensUseCas
         const newRefreshToken = this.jwtService.sign({
             id: command.userId,
             userIP: command.userIP,
-            userDevice: command.deviceId,
+            userDeviceId: command.deviceId,
             userAgent: command.userAgent
 
         }, {secret: refreshSecret, expiresIn: refreshExpiry});

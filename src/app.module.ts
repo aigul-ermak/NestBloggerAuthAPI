@@ -1,9 +1,4 @@
-import {
-    MiddlewareConsumer,
-    Module,
-    NestModule,
-    Provider,
-} from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule, Provider,} from '@nestjs/common';
 import {MongooseModule} from '@nestjs/mongoose';
 import {UsersRepository} from './features/users/infrastructure/users.repository';
 import {UsersService} from './features/users/application/users.service';
@@ -75,6 +70,8 @@ import {SessionModule} from "./features/session/session.module";
 import {SessionRepository} from "./features/session/infrastructure/session.repository";
 import {SessionQueryRepository} from "./features/session/infrastructure/session.query-repository";
 import {RefreshTokensUseCase} from "./features/usecases/refreshTokensUserUseCase";
+import {SecurityModule} from './features/security/security.module';
+import {SecurityController} from './features/security/security.controller';
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -133,12 +130,13 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
         LikesCommentModule,
         CommentsModule,
         SessionModule,
+        SecurityModule,
     ],
     providers: [...usersProviders, ...blogsProviders, AuthService, BlogsService, PostsService,
         LikesRepository, LikesQueryRepository, CommentsRepository, CommentsQueryRepository,
         LikesCommentRepository, LikesCommentQueryRepository, UsersQueryRepository, SessionRepository,
         SessionQueryRepository, ...useCases],
-    controllers: [UsersController, AuthController, BlogsController, PostsController, CommentsController],
+    controllers: [UsersController, AuthController, BlogsController, PostsController, CommentsController, SecurityController],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

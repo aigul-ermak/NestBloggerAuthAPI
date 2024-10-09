@@ -53,11 +53,10 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
         const accessToken = this.jwtService.sign(payload, {});
 
         const refreshToken = this.jwtService.sign({
-            id: user.id,
-            userIP: command.userIP,
-            userDeviceId: userDeviceId,
-            userAgent: command.userAgent
-
+            userId: user.id,
+            deviceId: userDeviceId,
+            userIp: command.userIP,
+            userAgent: command.userAgent,
         }, {secret: refreshSecret, expiresIn: refreshExpiry});
 
         const decodedToken = this.jwtService.decode(refreshToken) as { iat: number, exp: number };
@@ -65,7 +64,6 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
         if (!decodedToken) {
             throw new Error('Failed to decode refresh token');
         }
-
 
         const iatDate = new Date(decodedToken.iat * 1000);
         const expDate = new Date(decodedToken.exp * 1000);

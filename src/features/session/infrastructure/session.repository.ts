@@ -38,4 +38,11 @@ export class SessionRepository {
 
         return result.deletedCount > 0;
     }
+
+    async deleteOtherSessions(userId: string, deviceId: string) {
+
+        const result = await this.sessionModel.deleteMany({userId, deviceId: {$ne: deviceId}});
+
+        return result.deletedCount > 0;
+    }
 }

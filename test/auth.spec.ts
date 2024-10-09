@@ -2,7 +2,6 @@ import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
 import {AppModule} from './../src/app.module';
 import {applyAppSettings} from "../src/settings/apply.app.setting";
-import {usersTestingModule} from "./helpers/usersTestingModule";
 
 const request = require('supertest');
 
@@ -130,7 +129,25 @@ describe('Auth testing', () => {
 
     it('POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401', async () => {
 
-        const userDto = await usersTestingModule.createUser(httpServer)
+        const userDto = {
+            login: "user2",
+            password: "password",
+            email: "example2@example.com"
+        };
+
+        const createdUser = await request(httpServer)
+            .post(`/users`)
+            .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
+            .send(userDto)
+            .expect(201);
+
+        const expectedCreatedUser = {
+            id: expect.any(String),
+            login: userDto.login,
+            email: userDto.email,
+            createdAt: expect.any(String),
+        };
+
 
         const userLogin = await request(httpServer)
             .post(`/auth/login`)
@@ -157,7 +174,7 @@ describe('Auth testing', () => {
             }, milliseconds)
         })
 
-        await delay(2000)
+        await delay(20000)
 
         await request(httpServer)
             .post('/auth/refresh-token')
@@ -165,7 +182,7 @@ describe('Auth testing', () => {
             .send({})
             .expect(401)
 
-    });
+    }, 30000);
 
 
     it('return 401 for login user: wrong email', async () => {

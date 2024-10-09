@@ -66,7 +66,6 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
             throw new Error('Failed to decode refresh token');
         }
 
-        console.log(decodedToken)
 
         const iatDate = new Date(decodedToken.iat * 1000);
         const expDate = new Date(decodedToken.exp * 1000);

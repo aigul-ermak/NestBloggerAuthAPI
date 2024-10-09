@@ -72,6 +72,9 @@ import {SessionQueryRepository} from "./features/session/infrastructure/session.
 import {RefreshTokensUseCase} from "./features/usecases/refreshTokensUserUseCase";
 import {SecurityModule} from './features/security/security.module';
 import {SecurityController} from './features/security/security.controller';
+import {GetAllDevicesWithActiveSessionsUseCase} from "./features/usecases/GetAllDevicesWithActiveSessionsUseCase";
+import {DeleteDeviceSessionUseCase} from "./features/usecases/deleteDeviceSessionUseCase";
+import {DeleteOtherSessionUseCase} from "./features/usecases/DeleteOtherSessionsUseCase";
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -82,7 +85,8 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
     CreateLikeForPostUseCase, GetCommentsForPostUseCase, CreateCommentForPostUseCase,
     CreateLikeForCommentUseCase, GetCommentByIdUseCase, DeleteCommentByIdUseCase, UpdateCommentUseCase,
     GetAllUsersUseCase, DeleteUserByIdUseCase, LoginUserUseCase, ConfirmEmailUseCase, CreateUserRegistrationUseCase,
-    SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase, RefreshTokensUseCase]
+    SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase, RefreshTokensUseCase, GetAllDevicesWithActiveSessionsUseCase,
+    DeleteDeviceSessionUseCase, DeleteOtherSessionUseCase]
 
 @Module({
     imports: [

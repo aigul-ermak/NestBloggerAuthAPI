@@ -14,8 +14,6 @@ import {SessionModule} from "../session/session.module";
         JwtModule.registerAsync({
             inject: [ConfigService],
             useFactory: async (configService: ConfigService) => {
-                console.log("++++++", configService.get<string>('jwtSettings.JWT_ACCESS_SECRET'))
-                console.log("++++++", typeof configService.get<string>('jwtSettings.ACCESS_TOKEN_EXPIRY'))
                 return {
                     secret: configService.get<string>('jwtSettings.JWT_ACCESS_SECRET'),
 

@@ -3,8 +3,6 @@ import {CommandBus} from "@nestjs/cqrs";
 import {GetAllDevicesWithActiveSessionsUseCaseCommand} from "../usecases/GetAllDevicesWithActiveSessionsUseCase";
 import {RefreshTokenGuard} from "../../infrastructure/guards/refresh-token.guard";
 import {Request} from "express";
-import {BasicAuthGuard} from "../../infrastructure/guards/basic-auth.guard";
-import {DeleteBlogByIdUseCaseCommand} from "../usecases/deleteBlogByIdUseCase";
 import {DeleteDeviceSessionUseCaseCommand} from "../usecases/deleteDeviceSessionUseCase";
 import {DeleteOtherSessionsUseCaseCommand} from "../usecases/DeleteOtherSessionsUseCase";
 
@@ -23,7 +21,7 @@ export class SecurityController {
         @Req() request: Request
     ) {
         const userId = request['userId'];
-        // console.log("userId", userId)
+
         const activeSessions = await this.commandBus.execute(new GetAllDevicesWithActiveSessionsUseCaseCommand(userId));
 
         return activeSessions;
@@ -50,7 +48,8 @@ export class SecurityController {
     async deleteDeviceSession(
         @Req() request: Request,
         @Param('id') deviceId: string) {
-        const userId = request['userId'];
+
+        const {deviceId: tokenDeviceId, userId} = request.user
 
         return this.commandBus.execute(
             new DeleteDeviceSessionUseCaseCommand(userId, deviceId)

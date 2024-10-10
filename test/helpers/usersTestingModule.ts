@@ -7,14 +7,14 @@ const HTTP_BASIC_USER = process.env.HTTP_BASIC_USER as string;
 const HTTP_BASIC_PASS = process.env.HTTP_BASIC_PASS as string;
 
 const reserveUserModel = {
-    login: "user1",
+    login: "user",
     password: "password",
     email: "example@example.com"
 };
 
 export const usersTestingModule = {
-    async createUser(httpServer: any, userDto?: any) {
 
+    async createUser(httpServer: any, userDto?: any) {
 
         const createdUser = await request(httpServer)
             .post(`/users`)
@@ -24,8 +24,8 @@ export const usersTestingModule = {
 
         const expectedCreatedUser = {
             id: expect.any(String),
-            login: userDto.login,
-            email: userDto.email,
+            login: userDto?.login ?? reserveUserModel.login,
+            email: userDto?.email ?? reserveUserModel.email,
             createdAt: expect.any(String),
         };
 

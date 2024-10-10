@@ -26,9 +26,7 @@ export class SessionRepository {
                 expDate: sessionUser.expDate
             }
         };
-        const updateResult = await this.sessionModel.updateOne(filter, updateDoc);
-
-        return updateResult;
+        return await this.sessionModel.updateOne(filter, updateDoc);
 
     }
 

@@ -45,8 +45,7 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailUseCaseC
         }
 
         if (user.emailConfirmation.confirmationCode === command.code) {
-            let result: boolean = await this.usersRepository.updateConfirmation(user.id)
-            return result
+            return await this.usersRepository.updateConfirmation(user.id)
         }
         return false;
 

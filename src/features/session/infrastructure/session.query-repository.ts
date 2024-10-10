@@ -14,9 +14,21 @@ export class SessionQueryRepository {
 
     }
 
+    async getUserSessionByDeviceId(deviceId: string) {
+
+        return this.sessionModel.findOne({deviceId}).exec();
+
+    }
+
     async getUserDevicesActiveSessions(userId: string) {
 
         return this.sessionModel.find({userId}).exec();
+
+    }
+
+    async getAllSession() {
+
+        return this.sessionModel.find({}).exec();
 
     }
 }

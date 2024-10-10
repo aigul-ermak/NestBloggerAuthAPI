@@ -35,7 +35,8 @@ export class AuthController {
         const {
             accessToken,
             refreshToken
-        } = await this.commandBus.execute(new LoginUserUseCaseCommand(loginDto, userIP, userAgent));
+        } = await this.commandBus
+            .execute(new LoginUserUseCaseCommand(loginDto, userIP, userAgent));
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -82,7 +83,6 @@ export class AuthController {
 
     }
 
-
     @Post('/refresh-token')
     @HttpCode(200)
     @UseGuards(RefreshTokenGuard)
@@ -90,10 +90,7 @@ export class AuthController {
         @Req() request: Request,
         @Res() res: Response) {
 
-        const userId = request['userId'];
-        const deviceId = request['userDevice'];
-        const userIP = request['userIP'];
-        const userAgent = request['userAgent'];
+        const {userId, deviceId, userIP, userAgent} = request.user
 
         const {
             accessToken,
@@ -126,7 +123,8 @@ export class AuthController {
     async getUser(
         @Req() request: Request
     ) {
-        const userId = request['userId'];
+        const {userId} = request.user
+        // const userId = request['userId'];
 
         return this.commandBus.execute(new GetMeUseCaseCommand(userId));
 
@@ -136,15 +134,10 @@ export class AuthController {
     @HttpCode(204)
     @UseGuards(RefreshTokenGuard)
     async logoutUser(
-        @Req() req: Request, @Res() res: Response) {
-        // const refreshToken = req.cookies.refreshToken;
-        //
-        // if (!refreshToken) {
-        //     throw new UnauthorizedException('No refresh token found');
-        // }
-
-        const userId = req['userId'];
-        const deviceId = req['userDevice'];
+        @Req() request: Request, @Res() res: Response) {
+        const {userId, deviceId,} = request.user
+        // const userId = req['userId'];
+        // const deviceId = req['deviceId'];
 
         await this.commandBus.execute(new LogoutUserUseCaseCommand(userId, deviceId));
 
@@ -153,6 +146,7 @@ export class AuthController {
             secure: true,
             sameSite: 'strict',
         });
+
         res.send();
     }
 }

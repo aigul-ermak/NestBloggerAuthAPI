@@ -9,6 +9,7 @@ import {ConfigService} from "@nestjs/config";
 import {v4 as uuidv4} from "uuid";
 import {SessionRepository} from "../session/infrastructure/session.repository";
 import {UserWithIdOutputModel} from "../users/api/models/output/user.output.model";
+import {AccessTokenType, RefreshTokenType} from "../auth/api/models/types/accessTokenType";
 
 
 export class LoginUserUseCaseCommand {
@@ -36,12 +37,12 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
         const accessSecret = this.configService.get<string>('jwtSettings.JWT_ACCESS_SECRET');
         const accessExpiry = this.configService.get<string>('jwtSettings.ACCESS_TOKEN_EXPIRY');
 
-        const refreshSecret = this.configService.get<string>('jwtSettings.JWT_REFRESH_SECRET');
-        const refreshExpiry = this.configService.get<string>('jwtSettings.REFRESH_TOKEN_EXPIRY');
+        const refreshSecret: string | undefined = this.configService.get<string>('jwtSettings.JWT_REFRESH_SECRET');
+        const refreshExpiry: string | undefined = this.configService.get<string>('jwtSettings.REFRESH_TOKEN_EXPIRY');
 
-        const userDeviceId = uuidv4();
+        const userDeviceId: string = uuidv4();
 
-        const user = await this.validateUser(
+        const user: UserWithIdOutputModel = await this.validateUser(
             command.loginDto.loginOrEmail,
             command.loginDto.password);
 
@@ -49,16 +50,21 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const payload = {loginOrEmail: command.loginDto.loginOrEmail, id: user.id};
+        const accessTokenPayload: AccessTokenType = {loginOrEmail: command.loginDto.loginOrEmail, id: user.id};
 
-        const accessToken = this.jwtService.sign(payload, {});
-
-        const refreshToken = this.jwtService.sign({
+        const refreshTokenPayload: RefreshTokenType = {
             userId: user.id,
             deviceId: userDeviceId,
-            userIp: command.userIP,
+            userIP: command.userIP,
             userAgent: command.userAgent,
-        }, {secret: refreshSecret, expiresIn: refreshExpiry});
+        };
+
+        const accessToken = this.jwtService.sign(accessTokenPayload, {});
+
+        const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+            secret: refreshSecret,
+            expiresIn: refreshExpiry
+        });
 
         const decodedToken = this.jwtService.decode(refreshToken) as { iat: number, exp: number };
 

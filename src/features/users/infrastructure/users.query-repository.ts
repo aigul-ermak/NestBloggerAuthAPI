@@ -4,7 +4,8 @@ import {User, UserDocument} from '../domain/users.entity';
 import {FilterQuery, Model, SortOrder} from 'mongoose';
 import {
     UserOutputModel,
-    UserOutputModelMapper, UserWithIdOutputModel,
+    UserOutputModelMapper,
+    UserWithIdOutputModel,
     UserWithIdOutputModelMapper
 } from "../api/models/output/user.output.model";
 
@@ -45,7 +46,9 @@ export class UsersQueryRepository {
 
 
     async findUserByConfirmationCode(code: string) {
-        const user: any = await this.userModel.findOne({"emailConfirmation.confirmationCode": code})
+        //TODO
+        const user: any = await this.userModel.findOne({"emailConfirmation.confirmationCode": code}).exec();
+
         if (!user) {
             return null;
         }

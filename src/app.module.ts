@@ -75,6 +75,7 @@ import {SecurityController} from './features/security/security.controller';
 import {GetAllDevicesWithActiveSessionsUseCase} from "./features/usecases/GetAllDevicesWithActiveSessionsUseCase";
 import {DeleteDeviceSessionUseCase} from "./features/usecases/deleteDeviceSessionUseCase";
 import {DeleteOtherSessionUseCase} from "./features/usecases/DeleteOtherSessionsUseCase";
+import {ThrottlerModule} from "@nestjs/throttler";
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -95,6 +96,10 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
             load: [configuration],
             envFilePath: ['.env.development.local', '.env.development', '.env'],
         }),
+        ThrottlerModule.forRoot([{
+            ttl: 10000,
+            limit: 5,
+        }]),
         MongooseModule.forRootAsync({
             useFactory: (configService: ConfigService<ConfigurationType, true>) => {
                 const environmentSettings = configService.get('environmentSettings', {

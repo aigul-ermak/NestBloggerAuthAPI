@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import {JwtService} from "@nestjs/jwt";
 import {ConfigService} from "@nestjs/config";
 import {SessionRepository} from "../session/infrastructure/session.repository";
+import {AccessTokenType} from "../auth/api/models/types/accessTokenType";
+import {UserWithIdOutputModel} from "../users/api/models/output/user.output.model";
 
 
 export class RefreshTokensUseCaseCommand {
@@ -33,15 +35,15 @@ export class RefreshTokensUseCase implements ICommandHandler<RefreshTokensUseCas
         const refreshExpiry = this.configService.get<string>('jwtSettings.REFRESH_TOKEN_EXPIRY');
 
         const user = await this.usersQueryRepository.getUserById(command.userId);
-//TODO login or email
-        const newPayload = {loginOrEmail: user?.email, id: command.userId};
+
+        const newPayload: AccessTokenType = {loginOrEmail: user?.email, id: command.userId};
 
         const newAccessToken = this.jwtService.sign(newPayload, {});
 
         const newRefreshToken = this.jwtService.sign({
             id: command.userId,
             userIP: command.userIP,
-            userDeviceId: command.deviceId,
+            deviceId: command.deviceId,
             userAgent: command.userAgent
 
         }, {secret: refreshSecret, expiresIn: refreshExpiry});
@@ -50,6 +52,7 @@ export class RefreshTokensUseCase implements ICommandHandler<RefreshTokensUseCas
 
         const iatDate = new Date(decodedToken.iat * 1000);
         const expDate = new Date(decodedToken.exp * 1000);
+
 
         const newSessionUser = {
             userId: command.userId,
@@ -67,8 +70,8 @@ export class RefreshTokensUseCase implements ICommandHandler<RefreshTokensUseCas
     }
 
     private async validateUser(loginOrEmail: string, password: string) {
-//TODO type
-        const user: any = await this.usersQueryRepository.findOneByLoginOrEmail(loginOrEmail);
+
+        const user: UserWithIdOutputModel | null = await this.usersQueryRepository.findOneByLoginOrEmail(loginOrEmail);
 
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');

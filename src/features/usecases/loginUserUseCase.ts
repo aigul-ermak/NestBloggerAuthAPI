@@ -8,6 +8,7 @@ import {JwtService} from "@nestjs/jwt";
 import {ConfigService} from "@nestjs/config";
 import {v4 as uuidv4} from "uuid";
 import {SessionRepository} from "../session/infrastructure/session.repository";
+import {UserWithIdOutputModel} from "../users/api/models/output/user.output.model";
 
 
 export class LoginUserUseCaseCommand {
@@ -84,14 +85,14 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
     }
 
     private async validateUser(loginOrEmail: string, password: string) {
-//TODO type
-        const user: any = await this.usersQueryRepository.findOneByLoginOrEmail(loginOrEmail);
+
+        const user: UserWithIdOutputModel | null = await this.usersQueryRepository.findOneByLoginOrEmail(loginOrEmail);
 
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const isPasswordValid = bcrypt.compare(password, user.accountData.passwordHash);
+        const isPasswordValid = await bcrypt.compare(password, user.accountData.passwordHash);
 
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');

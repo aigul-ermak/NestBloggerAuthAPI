@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import {JwtService} from "@nestjs/jwt";
 import {ConfigService} from "@nestjs/config";
 import {SessionRepository} from "../session/infrastructure/session.repository";
-import {AccessTokenType} from "../auth/api/models/types/accessTokenType";
+import {AccessTokenType, RefreshTokenType} from "../auth/api/models/types/accessTokenType";
 import {UserWithIdOutputModel} from "../users/api/models/output/user.output.model";
 
 
@@ -36,17 +36,25 @@ export class RefreshTokensUseCase implements ICommandHandler<RefreshTokensUseCas
 
         const user = await this.usersQueryRepository.getUserById(command.userId);
 
-        const newPayload: AccessTokenType = {loginOrEmail: user?.email, id: command.userId};
+        const newPayload: AccessTokenType = {
+            loginOrEmail: user?.email,
+            id: command.userId,
+            deviceId: command.deviceId,
+        };
 
         const newAccessToken = this.jwtService.sign(newPayload, {});
-
-        const newRefreshToken = this.jwtService.sign({
-            id: command.userId,
+        const refreshTokenPayload: RefreshTokenType = {
+            userId: command.userId,
             userIP: command.userIP,
             deviceId: command.deviceId,
             userAgent: command.userAgent
 
-        }, {secret: refreshSecret, expiresIn: refreshExpiry});
+        }
+
+        const newRefreshToken = this.jwtService.sign(refreshTokenPayload, {
+            secret: refreshSecret,
+            expiresIn: refreshExpiry
+        });
 
         const decodedToken = this.jwtService.decode(newRefreshToken) as { iat: number, exp: number };
 

@@ -1,6 +1,7 @@
 export type AccessTokenType = {
     loginOrEmail: string | undefined,
-    id: string
+    id: string,
+    deviceId: string
 }
 
 export type RefreshTokenType = {

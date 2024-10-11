@@ -3,6 +3,7 @@ import {JwtService} from '@nestjs/jwt';
 import {Request} from 'express';
 import {ConfigService} from "@nestjs/config";
 import {SessionQueryRepository} from "../../features/session/infrastructure/session.query-repository";
+import {RefreshTokenType} from "../../features/auth/api/models/types/accessTokenType";
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
@@ -24,13 +25,14 @@ export class RefreshTokenGuard implements CanActivate {
         try {
             const decoded = this.jwtService.verify(refreshToken, {secret: refreshSecret});
 
-            const {userId, userIP, deviceId, userAgent} = decoded
+            const {userId, userIP, deviceId, userAgent}: RefreshTokenType = decoded
 
             const iatDate = new Date(decoded.iat * 1000);
 
             const session = await this.sessionQueryRepository.getUserSession(userId, deviceId);
+
             if (!session) {
-                throw new UnauthorizedException('Session not found');
+                throw new UnauthorizedException(`Session not found: decoded: ${JSON.stringify(decoded)}`);
             }
 
             if (session.iatDate.toISOString() !== iatDate.toISOString()) {
@@ -46,7 +48,7 @@ export class RefreshTokenGuard implements CanActivate {
                 throw new UnauthorizedException('Refresh token has expired');
             }
 
-            throw new UnauthorizedException('Invalid refresh token');
+            throw new UnauthorizedException(`Invalid refresh token: ${error}`);
 
         }
     }

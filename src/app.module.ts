@@ -75,7 +75,8 @@ import {SecurityController} from './features/security/security.controller';
 import {GetAllDevicesWithActiveSessionsUseCase} from "./features/usecases/GetAllDevicesWithActiveSessionsUseCase";
 import {DeleteDeviceSessionUseCase} from "./features/usecases/deleteDeviceSessionUseCase";
 import {DeleteOtherSessionUseCase} from "./features/usecases/DeleteOtherSessionsUseCase";
-import {ThrottlerModule} from "@nestjs/throttler";
+import {ThrottlerGuard, ThrottlerModule} from "@nestjs/throttler";
+import {APP_GUARD} from "@nestjs/core";
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -91,15 +92,15 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
 
 @Module({
     imports: [
+        ThrottlerModule.forRoot([{
+            ttl: 60000,
+            limit: 10,
+        }]),
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],
             envFilePath: ['.env.development.local', '.env.development', '.env'],
         }),
-        ThrottlerModule.forRoot([{
-            ttl: 10000,
-            limit: 5,
-        }]),
         MongooseModule.forRootAsync({
             useFactory: (configService: ConfigService<ConfigurationType, true>) => {
                 const environmentSettings = configService.get('environmentSettings', {
@@ -141,7 +142,12 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
         SessionModule,
         SecurityModule,
     ],
-    providers: [...usersProviders, ...blogsProviders, AuthService, BlogsService, PostsService,
+    providers: [
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+        },
+        ...usersProviders, ...blogsProviders, AuthService, BlogsService, PostsService,
         LikesRepository, LikesQueryRepository, CommentsRepository, CommentsQueryRepository,
         LikesCommentRepository, LikesCommentQueryRepository, UsersQueryRepository, SessionRepository,
         SessionQueryRepository, ...useCases],

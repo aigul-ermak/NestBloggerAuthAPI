@@ -1,4 +1,4 @@
-import {Controller, Delete, Get, HttpCode, Param, Req, UseGuards} from '@nestjs/common';
+import {Controller, Delete, Get, HttpCode, Param, Req, UnauthorizedException, UseGuards} from '@nestjs/common';
 import {CommandBus} from "@nestjs/cqrs";
 import {GetAllDevicesWithActiveSessionsUseCaseCommand} from "../usecases/GetAllDevicesWithActiveSessionsUseCase";
 import {RefreshTokenGuard} from "../../infrastructure/guards/refresh-token.guard";
@@ -20,7 +20,10 @@ export class SecurityController {
     async getAllDevicesWithActiveSessions(
         @Req() request: Request
     ) {
-        const userId = request['userId'];
+
+        if (!request.user) throw new UnauthorizedException('User info was not provided')
+
+        const {userId} = request.user;
 
         const activeSessions = await this.commandBus.execute(new GetAllDevicesWithActiveSessionsUseCaseCommand(userId));
 
@@ -33,8 +36,10 @@ export class SecurityController {
     async deleteOtherSessions(
         @Req() request: Request,
     ) {
-        const userId = request['userId'];
-        const deviceId = request['deviceId'];
+
+        if (!request.user) throw new UnauthorizedException('User info was not provided')
+
+        const {userId, deviceId} = request.user
 
         return this.commandBus.execute(
             new DeleteOtherSessionsUseCaseCommand(userId, deviceId)
@@ -48,6 +53,8 @@ export class SecurityController {
     async deleteDeviceSession(
         @Req() request: Request,
         @Param('id') deviceId: string) {
+
+        if (!request.user) throw new UnauthorizedException('User info was not provided');
 
         const {deviceId: tokenDeviceId, userId} = request.user
 

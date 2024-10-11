@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards,} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards,} from '@nestjs/common';
 
 import {Request, Response} from 'express';
 import {UserLoginDto} from "./models/input/login-user.input.dto";
@@ -14,6 +14,7 @@ import {LogoutUserUseCaseCommand} from "../../usecases/logoutUserUseCase";
 import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
 import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.guard";
 import {RefreshTokensUseCaseCommand} from "../../usecases/refreshTokensUserUseCase";
+import {Throttle} from "@nestjs/throttler";
 
 
 @Controller('auth')
@@ -24,13 +25,15 @@ export class AuthController {
     ) {
     }
 
+    @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/login')
     @HttpCode(200)
     async login(@Body() loginDto: UserLoginDto,
+                @Req() req: Request,
                 @Res() res: Response,) {
 
-        const userIP: string = "testuserip";
-        const userAgent: string = "user-agent";
+        const userIP: string = req.ip ?? "testuserip";
+        const userAgent: string = req.headers['user-agent'] ?? "user-agent";
 
         const {
             accessToken,
@@ -66,6 +69,7 @@ export class AuthController {
 // }
 //
 
+    @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/registration-confirmation')
     @HttpCode(204)
     async confirmRegistration(@Body('code') code: string) {
@@ -74,7 +78,8 @@ export class AuthController {
 
     }
 
-    @Post('/registration')
+    @Throttle({default: {limit: 5, ttl: 10000}})
+    @Post('/registration')    // @UseGuards(ThrottlerGuard)
     @HttpCode(204)
     async registration(
         @Body() createUserDto: CreateUserDto) {
@@ -90,6 +95,7 @@ export class AuthController {
         @Req() request: Request,
         @Res() res: Response) {
 
+        if (!request.user) throw new UnauthorizedException('User info was not provided')
         const {userId, deviceId, userIP, userAgent} = request.user
 
         const {
@@ -108,6 +114,7 @@ export class AuthController {
         return res.json({accessToken});
     }
 
+    @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/registration-email-resending')
     @HttpCode(204)
     async sendNewCodeToEmail(@Body() resendEmailDto: ResendEmailDto) {
@@ -123,8 +130,9 @@ export class AuthController {
     async getUser(
         @Req() request: Request
     ) {
-        const {userId} = request.user
-        // const userId = request['userId'];
+        if (!request.user) throw new UnauthorizedException('User info was not provided')
+
+        const {userId} = request.user;
 
         return this.commandBus.execute(new GetMeUseCaseCommand(userId));
 
@@ -135,9 +143,10 @@ export class AuthController {
     @UseGuards(RefreshTokenGuard)
     async logoutUser(
         @Req() request: Request, @Res() res: Response) {
-        const {userId, deviceId,} = request.user
-        // const userId = req['userId'];
-        // const deviceId = req['deviceId'];
+
+        if (!request.user) throw new UnauthorizedException('User info was not provided')
+
+        const {userId, deviceId} = request.user
 
         await this.commandBus.execute(new LogoutUserUseCaseCommand(userId, deviceId));
 

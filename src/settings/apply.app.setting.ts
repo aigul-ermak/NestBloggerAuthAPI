@@ -1,8 +1,4 @@
-import {
-    BadRequestException,
-    INestApplication,
-    ValidationPipe,
-} from '@nestjs/common';
+import {BadRequestException, INestApplication, ValidationPipe,} from '@nestjs/common';
 import {appSettings} from './app.setting';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import {HttpExceptionFilter} from '../infrastructure/exception-filters/http.exception.filters';
@@ -39,22 +35,22 @@ export const applyAppSettings = (app: INestApplication) => {
 //   app.setGlobalPrefix(APP_PREFIX);
 // };
 
-// const setSwagger = (app: INestApplication) => {
-//   if (!appSettings.env.isProduction()) {
-//     const swaggerPath = APP_PREFIX + '/swagger-doc';
-//
-//     const config = new DocumentBuilder()
-//       .setTitle('BLOGGER API')
-//       .addBearerAuth()
-//       .setVersion('1.0')
-//       .build();
-//
-//     const document = SwaggerModule.createDocument(app, config);
-//     SwaggerModule.setup(swaggerPath, app, document, {
-//       customSiteTitle: 'Blogger Swagger',
-//     });
-//   }
-// };
+const setSwagger = (app: INestApplication) => {
+    if (!appSettings.env.isProduction()) {
+        const swaggerPath = APP_PREFIX + '/swagger-doc';
+
+        const config = new DocumentBuilder()
+            .setTitle('BLOGGER API')
+            .addBearerAuth()
+            .setVersion('1.0')
+            .build();
+
+        const document = SwaggerModule.createDocument(app, config);
+        SwaggerModule.setup(swaggerPath, app, document, {
+            customSiteTitle: 'Blogger Swagger',
+        });
+    }
+};
 
 const setAppPipes = (app: INestApplication) => {
     app.useGlobalPipes(
@@ -79,6 +75,6 @@ const setAppPipes = (app: INestApplication) => {
     );
 };
 
-// const setAppExceptionsFilters = (app: INestApplication) => {
-//   app.useGlobalFilters(new HttpExceptionFilter());
-// };
+const setAppExceptionsFilters = (app: INestApplication) => {
+    app.useGlobalFilters(new HttpExceptionFilter());
+};

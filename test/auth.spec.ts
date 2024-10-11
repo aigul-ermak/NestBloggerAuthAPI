@@ -389,7 +389,26 @@ describe('Auth controller', () => {
     });
 
     it('POST -> "/auth/registration": return 429 for user registration', async () => {
+        const userRegistrationDto = {
+            login: "user",
+            password: "password",
+            email: "example@example.com"
+        };
 
+        for (let i = 0; i < 6; i++) {
+            const response = await request(app.getHttpServer())
+                .post('/auth/registration')
+                .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
+                .send(userRegistrationDto);
+
+            if (i < 5) {
+                expect(response.status).toBe(204);
+            } else {
+                expect(response.status).toBe(429);
+            }
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 10000));
 
     });
 
@@ -491,7 +510,7 @@ describe('Auth controller', () => {
 
         const currentUserLogin = await request(httpServer)
             .post(`/auth/login`)
-            .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
+            //.set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
             .send(currentUserLoginDto)
             .expect(200);
 
@@ -510,6 +529,23 @@ describe('Auth controller', () => {
 
     it('POST -> "/auth/logout": should status 401 not authorized;', async () => {
 
+        const cookie = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzA5MmVmZDkwMDM4N2NmNGFmODlkMmMiLCJkZXZpY2VJZCI6IjlmNjI2MGFjLWRmMzEtNDdiNi05YTBmLWJjNzFiNjRjMGJhOCIsInVzZXJJUCI6InRlc3R1c2VyaXAiLCJ1c2VyQWdlbnQiOiJ1c2VyLWFnZW50IiwiaWF0IjoxNzI4NjU1MTAxLCJleHAiOjE3Mjg2NTUxMjF9.bfaoQP6pSUgjtfmhQGU48h-QL2GWZjgsy6tpl8qjQS9";
+
+        const response = await request(httpServer)
+            .post(`/auth/logout`)
+            .set('Cookie', cookie)
+            .expect(401);
+
+        expect(response.body).toEqual({
+            error: "Unauthorized",
+            message: 'No refresh token found',
+            statusCode: 401
+        });
+    });
+
+    // auth/me
+    it('GET -> "/auth/me": should status 200', async () => {
+
         const userDto = {
             login: "newUser",
             password: "password",
@@ -527,30 +563,38 @@ describe('Auth controller', () => {
             password: "password",
         };
 
-        const currentUserLoginDto2 = {
-            loginOrEmail: "newUser1@example.com",
-            password: "password",
-        };
-
-        const currentUserLogin = await request(httpServer)
+        const loginUser = await request(httpServer)
             .post(`/auth/login`)
             .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
-            .send(currentUserLoginDto2)
-            .expect(401);
+            .send(currentUserLoginDto)
+            .expect(200);
 
-        const cookie = currentUserLogin.headers['set-cookie']
-
+        const accessToken = loginUser.body.accessToken;
 
         const response = await request(httpServer)
-            .post(`/auth/logout`)
-            .set('Cookie', cookie)
-            .expect(401);
+            .get(`/auth/me`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .expect(200);
 
-        expect(response.body).toEqual({
-            message: 'Unauthorized',
-            statusCode: 401
-        });
+        console.log(response.body)
+
+        const expectedResult = {
+            email: userDto.email,
+            login: userDto.login,
+            userId: expect.any(String)
+        };
+
+        expect(response.body).toEqual(expectedResult);
     });
 
 
+    it('GET -> "/auth/me": should status 401', async () => {
+
+        const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbk9yRW1haWwiOiJhaWcyIiwiaWQiOiI2NzA5M2ExNzk4YjEwY2NhZDE4OTEwMjkiLCJpYXQiOjE3Mjg2NTc5NDUsImV4cCI6MTcyODY1Nzk1NX0.B4lKhZD2XuzKjhUMX5CBicMT0lm_59VtkH5rKDMlf9U";
+
+        const response = await request(httpServer)
+            .get(`/auth/me`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .expect(401);
+    });
 });

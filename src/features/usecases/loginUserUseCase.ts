@@ -50,7 +50,11 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserUseCaseCommand
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const accessTokenPayload: AccessTokenType = {loginOrEmail: command.loginDto.loginOrEmail, id: user.id};
+        const accessTokenPayload: AccessTokenType = {
+            loginOrEmail: command.loginDto.loginOrEmail,
+            id: user.id,
+            deviceId: userDeviceId,
+        };
 
         const refreshTokenPayload: RefreshTokenType = {
             userId: user.id,

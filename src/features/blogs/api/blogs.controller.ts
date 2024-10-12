@@ -8,24 +8,23 @@ import {
     Param,
     Post,
     Put,
-    Query, Req, UseGuards,
+    Query,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
-import {
-    BlogInputDto,
-    CreatePostToBlogDto,
-} from './models/input/blog-input.dto';
-import {CreateBlogUseCaseCommand} from "../../usecases/createBlogUseCase";
-import {GetBlogByIdUseCaseCommand} from "../../usecases/getBlogByIdUseCase";
+import {BlogInputDto, CreatePostToBlogDto,} from './models/input/blog-input.dto';
+import {CreateBlogUseCaseCommand} from "./usecases/createBlogUseCase";
+import {GetBlogByIdUseCaseCommand} from "./usecases/getBlogByIdUseCase";
 import {BlogOutputModel} from "./models/output/blog.output.model";
 import {BasicAuthGuard} from "../../../infrastructure/guards/basic-auth.guard";
 import {SortBlogsDto} from "./models/input/sort-blog.input.dto";
-import {GetAllBlogsUseCaseCommand} from "../../usecases/getAllBlogsUseCase";
-import {DeleteBlogByIdUseCaseCommand} from "../../usecases/deleteBlogByIdUseCase";
+import {GetAllBlogsUseCaseCommand} from "./usecases/getAllBlogsUseCase";
+import {DeleteBlogByIdUseCaseCommand} from "./usecases/deleteBlogByIdUseCase";
 import {CommandBus} from "@nestjs/cqrs";
-import {UpdateBlogUseCaseCommand} from "../../usecases/updateBlogUseCase";
-import {CreatePostUseCaseCommand} from "../../usecases/createPostUseCase";
+import {UpdateBlogUseCaseCommand} from "./usecases/updateBlogUseCase";
+import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
 import {SortPostsDto} from "../../posts/api/models/input/sort-post.input.dto";
-import {GetAllPostsForBlogUseCaseCommand} from "../../usecases/getAllPostsForBlogUseCase";
+import {GetAllPostsForBlogUseCaseCommand} from "./usecases/getAllPostsForBlogUseCase";
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
 import {Request} from "express";
 

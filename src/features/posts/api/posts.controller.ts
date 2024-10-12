@@ -8,24 +8,26 @@ import {
     Param,
     Post,
     Put,
-    Query, Req, UseGuards,
+    Query,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import {Request} from 'express';
-import {CreatePostForBlogInputDto, UpdatePostDto} from './models/input/create-post.input.dto';
+import {CreatePostForBlogInputDto} from './models/input/create-post.input.dto';
 import {CommandBus} from "@nestjs/cqrs";
-import {CreatePostUseCaseCommand} from "../../usecases/createPostUseCase";
-import {GetPostByIdUseCaseCommand} from "../../usecases/getPostByIdUseCase";
+import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
+import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
 import {BasicAuthGuard} from "../../../infrastructure/guards/basic-auth.guard";
-import {UpdatePostUseCaseCommand} from "../../usecases/updatePostUseCase";
+import {UpdatePostUseCaseCommand} from "./usecases/updatePostUseCase";
 import {SortPostsDto} from "./models/input/sort-post.input.dto";
-import {GetAllPostsUseCaseCommand} from "../../usecases/getAllPostsUseCase";
-import {DeletePostByIdUseCaseCommand} from "../../usecases/deletePostByIdUseCase";
-import {CreateLikeForPostUseCaseCommand} from "../../usecases/createLikeForPostUseCase";
+import {GetAllPostsUseCaseCommand} from "./usecases/getAllPostsUseCase";
+import {DeletePostByIdUseCaseCommand} from "./usecases/deletePostByIdUseCase";
+import {CreateLikeForPostUseCaseCommand} from "./usecases/createLikeForPostUseCase";
 import {LikeStatusInputDto} from "../../likePost/api/model/like-status.input.dto";
 import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
-import {CreateCommentForPostUseCaseCommand} from "../../usecases/createCommentForPostUseCase";
+import {CreateCommentForPostUseCaseCommand} from "./usecases/createCommentForPostUseCase";
 import {CommentInputDto} from "../../comments/api/model/input/comment-input.dto";
-import {GetCommentsForPostUseCaseCommand} from "../../usecases/getCommentsForPostUseCase";
+import {GetCommentsForPostUseCaseCommand} from "./usecases/getCommentsForPostUseCase";
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
 
 

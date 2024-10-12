@@ -1,6 +1,5 @@
 import {Injectable} from "@nestjs/common";
 import nodemailer from 'nodemailer';
-import * as process from "process";
 import {ConfigService} from "@nestjs/config";
 
 @Injectable()

@@ -5,15 +5,15 @@ import {UserLoginDto} from "./models/input/login-user.input.dto";
 import {CreateUserDto} from "../../users/api/models/input/create-user.input.dto";
 import {ResendEmailDto} from "../../email/models/input/email.input.dto";
 import {CommandBus} from "@nestjs/cqrs";
-import {LoginUserUseCaseCommand} from "../../usecases/loginUserUseCase";
-import {ConfirmEmailUseCaseCommand} from "../../usecases/confirmEmailUseCase";
-import {CreateUserRegistrationUseCaseCommand} from "../../usecases/createUserRegistrationUseCase";
-import {SendNewCodeToEmailUseCaseCommand} from "../../usecases/sendNewCodeToEmailUseCase";
-import {GetMeUseCaseCommand} from "../../usecases/getMeUseCase";
-import {LogoutUserUseCaseCommand} from "../../usecases/logoutUserUseCase";
+import {LoginUserUseCaseCommand} from "./usecases/loginUserUseCase";
+import {ConfirmEmailUseCaseCommand} from "./usecases/confirmEmailUseCase";
+import {CreateUserRegistrationUseCaseCommand} from "./usecases/createUserRegistrationUseCase";
+import {SendNewCodeToEmailUseCaseCommand} from "./usecases/sendNewCodeToEmailUseCase";
+import {GetMeUseCaseCommand} from "./usecases/getMeUseCase";
+import {LogoutUserUseCaseCommand} from "./usecases/logoutUserUseCase";
 import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
 import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.guard";
-import {RefreshTokensUseCaseCommand} from "../../usecases/refreshTokensUserUseCase";
+import {RefreshTokensUseCaseCommand} from "./usecases/refreshTokensUserUseCase";
 import {Throttle} from "@nestjs/throttler";
 
 

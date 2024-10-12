@@ -59,4 +59,17 @@ export class UsersRepository {
             )
     }
 
+    //TODO
+    async updateUserPassword(userId: string, passwordHash: string): Promise<void> {
+        await this.userModel
+            .updateOne({_id: userId},
+                {
+                    $set: {
+                        'accountData.passwordHash': passwordHash,
+                        'accountData.passwordRecoveryCode': "",
+                        'accountData.recoveryCodeExpirationDate': ""
+                    }
+                }
+            )
+    }
 }

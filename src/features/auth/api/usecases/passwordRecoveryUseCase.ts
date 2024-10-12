@@ -4,10 +4,11 @@ import {UsersQueryRepository} from "../../../users/infrastructure/users.query-re
 import {UserWithIdOutputModel} from "../../../users/api/models/output/user.output.model";
 import {v4 as uuidv4} from "uuid";
 import {EmailService} from "../../../email/email.service";
+import {EmailDto} from "../../../email/models/input/email.input.dto";
 
 export class PasswordRecoveryUseCaseCommand {
     constructor(
-        public email: string
+        public email: EmailDto
     ) {
     }
 }
@@ -23,7 +24,7 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
 
     async execute(command: PasswordRecoveryUseCaseCommand) {
 
-        const user: UserWithIdOutputModel | null = await this.usersQueryRepository.findOneByLoginOrEmail(command.email);
+        const user: UserWithIdOutputModel | null = await this.usersQueryRepository.findOneByLoginOrEmail(command.email.email);
 
 
         if (user) {

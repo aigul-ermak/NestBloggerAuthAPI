@@ -3,7 +3,7 @@ import {Body, Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, 
 import {Request, Response} from 'express';
 import {UserLoginDto} from "./models/input/login-user.input.dto";
 import {CreateUserDto} from "../../users/api/models/input/create-user.input.dto";
-import {ResendEmailDto} from "../../email/models/input/email.input.dto";
+import {EmailDto} from "../../email/models/input/email.input.dto";
 import {CommandBus} from "@nestjs/cqrs";
 import {LoginUserUseCaseCommand} from "./usecases/loginUserUseCase";
 import {ConfirmEmailUseCaseCommand} from "./usecases/confirmEmailUseCase";
@@ -16,6 +16,8 @@ import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.gu
 import {RefreshTokensUseCaseCommand} from "./usecases/refreshTokensUserUseCase";
 import {Throttle} from "@nestjs/throttler";
 import {PasswordRecoveryUseCaseCommand} from "./usecases/passwordRecoveryUseCase";
+import {NewPasswordDto} from "./models/input/new-password.input.dto";
+import {CreateNewPasswordUseCaseCommand} from "./usecases/createNewPasswordUseCase";
 
 
 @Controller('auth')
@@ -53,23 +55,25 @@ export class AuthController {
 
     }
 
-
+    @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/password-recovery')
     @HttpCode(200)
     async recoveryPassword(
-        @Body('email') email: string) {
+        @Body() email: EmailDto) {
 
         await this.commandBus.execute(new PasswordRecoveryUseCaseCommand(email));
+
     }
 
-    //
-// @Post('/new-password')
-// async createNewPassword(
-//     @Body()
-//         loginUserDto: loginUserDto) {
-//
-// }
-//
+    @Post('/new-password')
+    async createNewPassword(
+        @Body()
+            newPasswordDto: NewPasswordDto) {
+
+        await this.commandBus.execute(new CreateNewPasswordUseCaseCommand(newPasswordDto));
+
+    }
+
 
     @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/registration-confirmation')
@@ -119,7 +123,7 @@ export class AuthController {
     @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/registration-email-resending')
     @HttpCode(204)
-    async sendNewCodeToEmail(@Body() resendEmailDto: ResendEmailDto) {
+    async sendNewCodeToEmail(@Body() resendEmailDto: EmailDto) {
 
         await this.commandBus.execute(new SendNewCodeToEmailUseCaseCommand(resendEmailDto));
 

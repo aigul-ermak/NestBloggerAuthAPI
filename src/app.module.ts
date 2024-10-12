@@ -80,6 +80,7 @@ import {DeleteOtherSessionUseCase} from "./features/security/api/usecases/delete
 import {ThrottlerGuard, ThrottlerModule} from "@nestjs/throttler";
 import {APP_GUARD} from "@nestjs/core";
 import {PasswordRecoveryUseCase} from "./features/auth/api/usecases/passwordRecoveryUseCase";
+import {CreateNewPasswordUseCase} from "./features/auth/api/usecases/createNewPasswordUseCase";
 
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
@@ -91,7 +92,7 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
     CreateLikeForCommentUseCase, GetCommentByIdUseCase, DeleteCommentByIdUseCase, UpdateCommentUseCase,
     GetAllUsersUseCase, DeleteUserByIdUseCase, LoginUserUseCase, ConfirmEmailUseCase, CreateUserRegistrationUseCase,
     SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase, RefreshTokensUseCase, GetAllDevicesWithActiveSessionsUseCase,
-    DeleteDeviceSessionUseCase, DeleteOtherSessionUseCase, PasswordRecoveryUseCase]
+    DeleteDeviceSessionUseCase, DeleteOtherSessionUseCase, PasswordRecoveryUseCase, CreateNewPasswordUseCase]
 
 @Module({
     imports: [

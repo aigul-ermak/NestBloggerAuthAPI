@@ -56,6 +56,17 @@ export class UsersQueryRepository {
         return user;
     }
 
+    async findUserByRecoveryCode(passwordRecoveryCode: string) {
+        //TODO
+        const user: any = await this.userModel.findOne({"accountData.passwordRecoveryCode": passwordRecoveryCode}).exec();
+        console.error("from repo", user)
+        if (!user) {
+            return null;
+        }
+
+        return user;
+    }
+
     async findAll(filter: any, sortBy: string, sortDirection: string, skip: number, limit: number) {
 
         const result = await this.userModel

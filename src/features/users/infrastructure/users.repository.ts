@@ -40,11 +40,23 @@ export class UsersRepository {
         return result.modifiedCount > 0;
     }
 
-    async updateCode(id: string, code: string): Promise<boolean> {
+    async updateUserCode(id: string, code: string): Promise<boolean> {
         let result = await this.userModel
             .updateOne({_id: id}, {$set: {'emailConfirmation.confirmationCode': code}})
 
         return result.modifiedCount > 0;
+    }
+
+    async updateUserPasswordRecoveryCode(userId: string, passwordRecoveryCode: string): Promise<void> {
+        await this.userModel
+            .updateOne({_id: userId},
+                {
+                    $set: {
+                        'accountData.passwordRecoveryCode': passwordRecoveryCode,
+                        'accountData.recoveryCodeExpirationDate': new Date(Date.now() + (1 * 60 + 3) * 60 * 1000)
+                    }
+                }
+            )
     }
 
 }

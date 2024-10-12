@@ -15,6 +15,7 @@ import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
 import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.guard";
 import {RefreshTokensUseCaseCommand} from "./usecases/refreshTokensUserUseCase";
 import {Throttle} from "@nestjs/throttler";
+import {PasswordRecoveryUseCaseCommand} from "./usecases/passwordRecoveryUseCase";
 
 
 @Controller('auth')
@@ -52,13 +53,14 @@ export class AuthController {
 
     }
 
-    //
-// @Post('/password-recovery')
-// async recoveryPassword(
-//     @Body()
-//     loginUserDto: loginUserDto) {
-//
-// }
+
+    @Post('/password-recovery')
+    @HttpCode(200)
+    async recoveryPassword(
+        @Body('email') email: string) {
+
+        await this.commandBus.execute(new PasswordRecoveryUseCaseCommand(email));
+    }
 
     //
 // @Post('/new-password')

@@ -32,7 +32,7 @@ export class JwtAuthGuard implements CanActivate {
                 userIP: request.ip ?? 'testip',
                 userAgent: request.headers['user-agent'] ?? 'test-user-agent'
             };
-          
+
             return true;
 
         } catch (error) {

@@ -51,7 +51,7 @@ export class SendNewCodeToEmailUseCase implements ICommandHandler<SendNewCodeToE
             });
         }
 
-        await this.usersRepository.updateCode(user!.id, newCode)
+        await this.usersRepository.updateUserCode(user!.id, newCode)
 
         let userWithNewCode: UserWithIdOutputModel | null = await await this.usersQueryRepository.findOneByLoginOrEmail(user!.accountData.email);
 

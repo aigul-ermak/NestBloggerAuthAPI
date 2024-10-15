@@ -1,9 +1,10 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
-import {AppModule} from './../src/app.module';
+import {AppModule} from '../src/app.module';
 import {applyAppSettings} from "../src/settings/apply.app.setting";
 import {usersTestingModule} from "./helpers/usersTestingModule";
 import {UsersQueryRepository} from "../src/features/users/infrastructure/users.query-repository";
+import {ThrottlerGuard} from "@nestjs/throttler";
 
 const request = require('supertest');
 
@@ -24,7 +25,12 @@ describe('Auth controller', () => {
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
-        }).compile();
+        })
+            .overrideProvider(ThrottlerGuard)
+            .useValue({
+                handleRequest: (context, limit, ttl, result) => result, // Disable throttling for the test
+            })
+            .compile();
 
         app = moduleFixture.createNestApplication();
         applyAppSettings(app);
@@ -148,9 +154,56 @@ describe('Auth controller', () => {
 
     });
 
-    it('POST -> auth/login: should return 429, \t\n' +
-        'More than 5 attempts from one IP-address during 10 seconds', async () => {
+    it('POST -> auth/login: should enforce throttling (429)', async () => {
+
+        for (let i = 0; i < 10; i++) {
+            await request(httpServer)
+                .post('/auth/login')
+                .send({
+                    loginOrEmail: 'example@example.com',
+                    password: 'wrongpassword',
+                });
+        }
+
+        await request(httpServer)
+            .post('/auth/login')
+            .send({
+                loginOrEmail: 'example@example.com',
+                password: 'wrongpassword',
+            })
+            .expect(429);
     });
+
+    // password recovery
+    //Even if current email is not registered (for prevent user's email detection)
+
+    it('POST -> "/auth/registration-confirmation": should return 204', async () => {
+
+        const userRegistrationDto = {
+            login: "user",
+            password: "password",
+            email: "example@example.com"
+        };
+
+        const registrationUser = await request(httpServer)
+            .post(`/auth/registration`)
+            .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
+            .send(userRegistrationDto)
+            .expect(204);
+
+        const user = await usersQuerySession.findOneByLoginOrEmail(userRegistrationDto.email);
+
+        const code = user.emailConfirmation.confirmationCode;
+
+        await request(httpServer)
+            .post(`/auth/registration-confirmation`)
+            .set('Authorization', getBasicAuthHeader(HTTP_BASIC_USER, HTTP_BASIC_PASS))
+            .send({
+                code: code
+            })
+            .expect(204);
+    });
+
 
     // auth/refresh-token
 
@@ -174,12 +227,16 @@ describe('Auth controller', () => {
             .expect(200);
 
         const cookie = loginUser.headers['set-cookie'];
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        await sleep(1000);
 
         const refreshToken = await request(httpServer)
             .post('/auth/refresh-token')
             .set('Cookie', cookie)
             .send({})
             .expect(200);
+
 
         expect(refreshToken.body).toEqual({
             accessToken: expect.any(String)

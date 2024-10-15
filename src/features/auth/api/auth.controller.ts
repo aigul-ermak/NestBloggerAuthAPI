@@ -18,8 +18,9 @@ import {Throttle, ThrottlerGuard} from "@nestjs/throttler";
 import {PasswordRecoveryUseCaseCommand} from "./usecases/passwordRecoveryUseCase";
 import {NewPasswordDto} from "./models/input/new-password.input.dto";
 import {CreateNewPasswordUseCaseCommand} from "./usecases/createNewPasswordUseCase";
+import {PasswordRecoveryCodeGuard} from "../../../infrastructure/guards/passwordRecoveryCode.guard";
 
-
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
 
@@ -28,7 +29,7 @@ export class AuthController {
     ) {
     }
 
-    @Throttle({default: {limit: 5, ttl: 10000}})
+
     @Post('/login')
     @HttpCode(200)
     async login(@Body() loginDto: UserLoginDto,
@@ -55,10 +56,11 @@ export class AuthController {
 
     }
 
-    // @Throttle({})
-    @UseGuards(ThrottlerGuard)
+
+    //Even if current email is not registered (for prevent user's email detection)
+
     @Post('/password-recovery')
-    @HttpCode(200)
+    @HttpCode(204)
     async recoveryPassword(
         @Body() email: EmailDto) {
 
@@ -67,6 +69,8 @@ export class AuthController {
     }
 
     @Post('/new-password')
+    @UseGuards(PasswordRecoveryCodeGuard)
+    @HttpCode(204)
     async createNewPassword(
         @Body()
             newPasswordDto: NewPasswordDto) {
@@ -76,7 +80,6 @@ export class AuthController {
     }
 
 
-    @Throttle({default: {limit: 5, ttl: 10000}})
     @Post('/registration-confirmation')
     @HttpCode(204)
     async confirmRegistration(@Body('code') code: string) {
@@ -85,8 +88,8 @@ export class AuthController {
 
     }
 
-    @Throttle({default: {limit: 5, ttl: 10000}})
-    @Post('/registration')    // @UseGuards(ThrottlerGuard)
+
+    @Post('/registration')
     @HttpCode(204)
     async registration(
         @Body() createUserDto: CreateUserDto) {
@@ -121,7 +124,7 @@ export class AuthController {
         return res.json({accessToken});
     }
 
-    @Throttle({default: {limit: 5, ttl: 10000}})
+
     @Post('/registration-email-resending')
     @HttpCode(204)
     async sendNewCodeToEmail(@Body() resendEmailDto: EmailDto) {

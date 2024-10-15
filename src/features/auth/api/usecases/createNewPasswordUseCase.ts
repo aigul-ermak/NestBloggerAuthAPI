@@ -22,22 +22,7 @@ export class CreateNewPasswordUseCase implements ICommandHandler<CreateNewPasswo
 
     async execute(command: CreateNewPasswordUseCaseCommand) {
 
-        let user: UserWithIdOutputModel | null = await this.usersQueryRepository.findUserByRecoveryCode(command.newPasswordDto.recoveryCode);
-//TODO
-        // if (!user) {
-        //     return false
-        // }
-        //
-        // if (new Date() > user.accountData.recoveryCodeExpirationDate) {
-        //     throw new BadRequestException({
-        //         errorsMessages: [
-        //             {
-        //                 message: 'Recovery code expired or invalid',
-        //                 field: 'recoveryCode',
-        //             }
-        //         ]
-        //     });
-        // }
+        let user: UserWithIdOutputModel | null = await this.usersQueryRepository.findUserByPasswordRecoveryCode(command.newPasswordDto.recoveryCode);
 
         if (user) {
             {

@@ -97,8 +97,8 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
 @Module({
     imports: [
         ThrottlerModule.forRoot([{
-            ttl: 60000,
-            limit: 10,
+            ttl: 10,
+            limit: 5,
         }]),
         ConfigModule.forRoot({
             isGlobal: true,
@@ -113,6 +113,7 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
                 const databaseSettings = configService.get('databaseSettings', {
                     infer: true,
                 });
+                console.error("env", `"${JSON.stringify(environmentSettings)}"`)
                 const uri = environmentSettings.isTesting
                     ? databaseSettings.MONGO_CONNECTION_URI_FOR_TESTS
                     : databaseSettings.MONGO_CONNECTION_URI;

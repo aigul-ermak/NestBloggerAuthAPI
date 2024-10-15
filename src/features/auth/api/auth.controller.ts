@@ -14,7 +14,7 @@ import {LogoutUserUseCaseCommand} from "./usecases/logoutUserUseCase";
 import {JwtAuthGuard} from "../../../infrastructure/guards/jwt-auth.guard";
 import {RefreshTokenGuard} from "../../../infrastructure/guards/refresh-token.guard";
 import {RefreshTokensUseCaseCommand} from "./usecases/refreshTokensUserUseCase";
-import {Throttle} from "@nestjs/throttler";
+import {Throttle, ThrottlerGuard} from "@nestjs/throttler";
 import {PasswordRecoveryUseCaseCommand} from "./usecases/passwordRecoveryUseCase";
 import {NewPasswordDto} from "./models/input/new-password.input.dto";
 import {CreateNewPasswordUseCaseCommand} from "./usecases/createNewPasswordUseCase";
@@ -55,7 +55,8 @@ export class AuthController {
 
     }
 
-    @Throttle({default: {limit: 5, ttl: 10000}})
+    // @Throttle({})
+    @UseGuards(ThrottlerGuard)
     @Post('/password-recovery')
     @HttpCode(200)
     async recoveryPassword(

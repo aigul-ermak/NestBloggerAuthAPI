@@ -21,7 +21,7 @@ export const applyAppSettings = (app: INestApplication) => {
     // Установка префикса
     // setAppPrefix(app);
     // Конфигурация swagger документации
-    //setSwagger(app);
+    setSwagger(app);
     // Применение глобальных pipes
     setAppPipes(app);
     app.use(cookieParser());

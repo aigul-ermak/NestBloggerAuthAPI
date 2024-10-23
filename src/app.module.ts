@@ -90,8 +90,8 @@ const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetA
     UpdatePostUseCase, GetAllPostsUseCase, DeletePostByIdUseCase, GetAllPostsForBlogUseCase,
     CreateLikeForPostUseCase, GetCommentsForPostUseCase, CreateCommentForPostUseCase,
     CreateLikeForCommentUseCase, GetCommentByIdUseCase, DeleteCommentByIdUseCase, UpdateCommentUseCase,
-    GetAllUsersUseCase, DeleteUserByIdUseCase, LoginUserUseCase, ConfirmEmailUseCase, CreateUserRegistrationUseCase,
-    SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase, RefreshTokensUseCase, GetAllDevicesWithActiveSessionsUseCase,
+    GetAllUsersUseCase, DeleteUserByIdUseCase, LoginUserUseCase, ConfirmEmailUseCase,
+    CreateUserRegistrationUseCase, SendNewCodeToEmailUseCase, GetMeUseCase, LogoutUserUseCase, RefreshTokensUseCase, GetAllDevicesWithActiveSessionsUseCase,
     DeleteDeviceSessionUseCase, DeleteOtherSessionUseCase, PasswordRecoveryUseCase, CreateNewPasswordUseCase]
 
 @Module({

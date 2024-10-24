@@ -6,19 +6,20 @@ on:
   push:
     branches:
       - staging
+
 jobs:
   Tests:
-    name: Tests # название конктретной работы в pipeline
+    name: Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout  # клонируем репозиторый
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: yarn # устанавливаем зависимости
+        run: yarn
 
       - name: Test
-        run: yarn test # запускаем скрипт тестами
+        run: yarn test:e2e
 
   Deploy-Preview:
     runs-on: ubuntu-latest

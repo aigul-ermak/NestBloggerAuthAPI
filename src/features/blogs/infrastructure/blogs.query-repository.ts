@@ -9,12 +9,12 @@ export class BlogsQueryRepository {
     constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {
     }
 
-    async getBlogById(blogId: string) {
+    async getBlogById(blogId: string): Promise<BlogMdOutputType | null> {
 
         if (!isValidObjectId(blogId)) {
             return null;
         }
-        return await this.blogModel.findById(blogId).exec();
+        return await this.blogModel.findById(blogId).exec() as BlogMdOutputType;
     }
 
     async findAllBlogsByFilter(filter: any, sortBy: string, sortDirection: string, skip: number, limit: number) {

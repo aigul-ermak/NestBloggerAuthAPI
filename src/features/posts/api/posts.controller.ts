@@ -15,8 +15,6 @@ import {
 import {Request} from 'express';
 import {CreatePostForBlogInputDto} from './models/input/create-post.input.dto';
 import {CommandBus} from "@nestjs/cqrs";
-import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
-import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
 import {BasicAuthGuard} from "../../../infrastructure/guards/basic-auth.guard";
 import {UpdatePostUseCaseCommand} from "./usecases/updatePostUseCase";
 import {SortPostsDto} from "./models/input/sort-post.input.dto";
@@ -31,6 +29,8 @@ import {GetCommentsForPostUseCaseCommand} from "./usecases/getCommentsForPostUse
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
 import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
 import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
+import {PostOutputModel} from "./models/output/postDbOutputModel";
+import {GetAllPostsForBlogOutputType} from "../../blogs/api/models/types/getAllPostsForBlogOutputType";
 
 
 class GetCommentsPostUseCaseCommand {
@@ -53,7 +53,7 @@ export class PostsController {
     async create(
         @Body()
             createPostDto: CreatePostForBlogInputDto,
-    ) {
+    ): Promise<PostOutputModel> {
         return await this.commandBus.execute(
             new CreatePostUseCaseCommand(createPostDto)
         );
@@ -92,7 +92,7 @@ export class PostsController {
     @UseGuards(JwtAuthNullableGuard)
     async getPostById(
         @Param('id') id: string,
-        @Req() req: Request) {
+        @Req() req: Request): Promise<PostOutputModel> {
         const userId = req['userId'];
 
         return await this.commandBus.execute(new GetPostByIdUseCaseCommand(id, userId));
@@ -135,7 +135,7 @@ export class PostsController {
     @UseGuards(JwtAuthNullableGuard)
     async getAllPosts(
         @Query() sortData: SortPostsDto,
-        @Req() req: Request) {
+        @Req() req: Request): Promise<GetAllPostsForBlogOutputType> {
 
         const userId = req['userId'];
 

@@ -13,8 +13,9 @@ export class PostsQueryRepository {
         return this.postModel.find().exec();
     }
 
-    async getPostById(id: string) {
-        return this.postModel.findById(id).exec();
+    async getPostById(id: string): Promise<PostMdOutputType> {
+        const result = await this.postModel.findById(id).exec();
+        return result as unknown as PostMdOutputType;
     }
 
     async findAllPostsPaginated(

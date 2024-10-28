@@ -2,6 +2,7 @@ import {BlogsRepository} from "../../infrastructure/blogs.repository";
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {BlogsQueryRepository} from "../../infrastructure/blogs.query-repository";
 import {NotFoundException} from "@nestjs/common";
+import {BlogDocument} from "../../domain/blog.entity";
 
 export class DeleteBlogByIdUseCaseCommand {
     constructor(public id: string) {
@@ -16,9 +17,9 @@ export class DeleteBlogByIdUseCase implements ICommandHandler<DeleteBlogByIdUseC
     ) {
     }
 
-    async execute(command: DeleteBlogByIdUseCaseCommand) {
+    async execute(command: DeleteBlogByIdUseCaseCommand): Promise<boolean> {
 
-        const blog = await this.blogsQueryRepository.getBlogById(command.id);
+        const blog: BlogDocument | null = await this.blogsQueryRepository.getBlogById(command.id);
 
         if (!blog) {
             throw new NotFoundException('Blog not found');

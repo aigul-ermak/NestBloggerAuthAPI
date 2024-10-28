@@ -29,6 +29,8 @@ import {CreateCommentForPostUseCaseCommand} from "./usecases/createCommentForPos
 import {CommentInputDto} from "../../comments/api/model/input/comment-input.dto";
 import {GetCommentsForPostUseCaseCommand} from "./usecases/getCommentsForPostUseCase";
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
+import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
+import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
 
 
 class GetCommentsPostUseCaseCommand {

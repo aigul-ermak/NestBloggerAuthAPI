@@ -1,10 +1,14 @@
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {PostsQueryRepository} from "../../../posts/infrastructure/posts.query-repository";
 import {SortPostsDto} from "../../../posts/api/models/input/sort-post.input.dto";
-import {PostLikeOutputModelMapper} from "../../../posts/api/models/output/post-db.output.model";
+import {PostLikeOutputModelMapper, PostOutputModel} from "../../../posts/api/models/output/post-db.output.model";
 import {BlogsQueryRepository} from "../../infrastructure/blogs.query-repository";
 import {NotFoundException} from "@nestjs/common";
 import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query-repository";
+import {PostDocument} from "../../../posts/domain/posts.entity";
+import {BlogMdOutputType} from "../models/types/createBlogMdOutputType";
+import {LIKE_STATUS} from "../../../../base/enum/enums";
+import {GetAllPostsForBlogOutputType} from "../models/types/getAllPostsForBlogOutputType";
 
 
 export class GetAllPostsForBlogUseCaseCommand {
@@ -21,26 +25,25 @@ export class GetAllPostsForBlogUseCase implements ICommandHandler<GetAllPostsFor
     ) {
     }
 
-    async execute(command: GetAllPostsForBlogUseCaseCommand) {
-        const sortBy = command.sortData.sortBy ?? 'createdAt';
-        const sortDirection = command.sortData.sortDirection ?? 'desc';
-        const page = command.sortData.pageNumber ?? 1;
-        const size = command.sortData.pageSize ?? 10;
+    async execute(command: GetAllPostsForBlogUseCaseCommand): Promise<GetAllPostsForBlogOutputType> {
+        const sortBy: string = command.sortData.sortBy ?? 'createdAt';
+        const sortDirection: "asc" | "desc" = command.sortData.sortDirection ?? 'desc';
+        const page: number = command.sortData.pageNumber ?? 1;
+        const size: number = command.sortData.pageSize ?? 10;
 
-        const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
-
+        const blog: BlogMdOutputType | null = await this.blogsQueryRepository.getBlogById(command.blogId);
 
         if (!blog) {
             throw new NotFoundException('Blog not found');
         }
 
-        const totalCount = await this.postsQueryRepository.countByBlogId(command.blogId);
-        const pagesCount = Math.ceil(totalCount / +size);
+        const totalCount: number = await this.postsQueryRepository.countByBlogId(command.blogId);
+        const pagesCount: number = Math.ceil(totalCount / +size);
 
         const skip = (page - 1) * size;
 
 
-        const posts = await this.postsQueryRepository
+        const posts: PostDocument[] = await this.postsQueryRepository
             .findPostsByBlogIdPaginated(
                 command.blogId,
                 sortBy,
@@ -49,15 +52,14 @@ export class GetAllPostsForBlogUseCase implements ICommandHandler<GetAllPostsFor
                 size
             );
 
-        //const mappedPosts = posts.map(PostOutputModelMapper);
 
-        let status = 'None';
-
-        const mappedPosts = await Promise.all(posts.map(async (post) => {
-            let status = 'None'; // Default status
+        const mappedPosts: PostOutputModel[] = await Promise.all(posts.map(async (post: PostDocument): Promise<PostOutputModel> => {
+            let status: LIKE_STATUS = LIKE_STATUS.NONE;
+            console.log("command.userId", command.userId)
             if (command.userId) {
-                const postLike = await this.likesQueryRepository.getLike(post.id, command.userId); // Change command.id to post.id
-                status = postLike ? postLike.status : 'None';
+                const postLike = await this.likesQueryRepository.getLike(post.id, command.userId);
+                console.log("postLike", postLike)
+                //status = postLike ? postLike.status : 'None';
             }
             const newestLikes = await this.likesQueryRepository.getNewestLikesForPost(post.id);
             return PostLikeOutputModelMapper(post, newestLikes, status);

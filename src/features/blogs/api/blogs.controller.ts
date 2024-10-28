@@ -30,6 +30,7 @@ import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCa
 import {PostToBlogInputType} from "../../posts/api/models/types/input/createPostToBlogInputType";
 import {PostMdOutputType} from "../../posts/api/models/types/output/postMdOutputType";
 import {GetAllBlogOutputType} from "./models/types/getAllBlogOutputType";
+import {GetAllPostsForBlogOutputType} from "./models/types/getAllPostsForBlogOutputType";
 
 @Controller('blogs')
 export class BlogsController {
@@ -100,12 +101,10 @@ export class BlogsController {
         @Param('id') blogId: string,
         @Query() sortData: SortPostsDto,
         @Req() req: Request
-    ) {
+    ): Promise<GetAllPostsForBlogOutputType> {
         const userId = req['userId'];
 
         return await this.commandBus.execute(new GetAllPostsForBlogUseCaseCommand(blogId, sortData, userId));
-
-
     }
 
     @Get(':id')

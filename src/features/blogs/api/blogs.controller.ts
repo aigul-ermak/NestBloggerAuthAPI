@@ -108,7 +108,7 @@ export class BlogsController {
     }
 
     @Get(':id')
-    async getBlogById(@Param('id') id: string) {
+    async getBlogById(@Param('id') id: string): Promise<BlogOutputModel> {
         return this.commandBus.execute(new GetBlogByIdUseCaseCommand(id));
     }
 

@@ -1,4 +1,5 @@
-import {PostDocument} from "../../../domain/posts.entity";
+import {PostType} from "../input/post-db.input.model";
+import {PostMdOutputType} from "../types/output/postMdOutputType";
 
 export class PostOutputModel {
     id: string
@@ -7,7 +8,7 @@ export class PostOutputModel {
     content: string;
     blogId: string;
     blogName: string;
-    createdAt: Date;
+    createdAt: string;
     extendedLikesInfo: {
         likesCount: number,
         dislikesCount: number,
@@ -20,7 +21,7 @@ export class PostOutputModel {
     };
 }
 
-export const PostOutputModelMapper = (post: PostDocument, newestLikes: any[], status: string): PostOutputModel => {
+export const PostLikeOutputModelMapper = (post: PostMdOutputType, newestLikes: any[], status: string): PostOutputModel => {
     const outputModel = new PostOutputModel();
 
     outputModel.id = post._id.toString();
@@ -29,36 +30,11 @@ export const PostOutputModelMapper = (post: PostDocument, newestLikes: any[], st
     outputModel.content = post.content;
     outputModel.blogId = post.blogId;
     outputModel.blogName = post.blogName;
-    outputModel.createdAt = post.createdAt;
+    outputModel.createdAt = post.createdAt.toString();
 
     outputModel.extendedLikesInfo = {
-        likesCount: post.likesCount ?? 0,
-        dislikesCount: post.dislikesCount ?? 0,
-        myStatus: "",
-        newestLikes: newestLikes.map(like => ({
-            addedAt: like.addedAt,
-            userId: like.userId,
-            login: like.login
-        }))
-    }
-
-    return outputModel;
-}
-
-export const PostLikeOutputModelMapper = (post: PostDocument, newestLikes: any[], status: string): PostOutputModel => {
-    const outputModel = new PostOutputModel();
-
-    outputModel.id = post._id.toString();
-    outputModel.title = post.title;
-    outputModel.shortDescription = post.shortDescription;
-    outputModel.content = post.content;
-    outputModel.blogId = post.blogId;
-    outputModel.blogName = post.blogName;
-    outputModel.createdAt = post.createdAt;
-
-    outputModel.extendedLikesInfo = {
-        likesCount: post.likesCount ?? 0,
-        dislikesCount: post.dislikesCount ?? 0,
+        likesCount: post.likesCount,
+        dislikesCount: post.dislikesCount,
         myStatus: status,
         newestLikes: newestLikes.map(like => ({
             addedAt: like.addedAt,
@@ -70,20 +46,20 @@ export const PostLikeOutputModelMapper = (post: PostDocument, newestLikes: any[]
     return outputModel;
 }
 
-export const PostsOutputModelMapper = (post: PostDocument, newestLikes: any[], status: string): PostOutputModel => {
+export const PostsOutputModelMapper = (post: PostType, newestLikes: any[], status: string): PostOutputModel => {
     const outputModel = new PostOutputModel();
 
-    outputModel.id = post._id.toString();
+    outputModel.id = post.id.toString();
     outputModel.title = post.title;
     outputModel.shortDescription = post.shortDescription;
     outputModel.content = post.content;
     outputModel.blogId = post.blogId;
     outputModel.blogName = post.blogName;
-    outputModel.createdAt = post.createdAt;
+    outputModel.createdAt = post.createdAt.toString();
 
     outputModel.extendedLikesInfo = {
-        likesCount: post.likesCount ?? 0,
-        dislikesCount: post.dislikesCount ?? 0,
+        likesCount: 0,
+        dislikesCount: 0,
         myStatus: status,
         newestLikes: newestLikes.map(like => ({
             addedAt: like.addedAt,

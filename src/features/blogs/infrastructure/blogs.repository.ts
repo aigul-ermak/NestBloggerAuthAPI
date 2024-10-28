@@ -3,6 +3,7 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import {Blog, BlogDocument} from '../domain/blog.entity';
 import {UpdateBlogDto} from "../api/models/input/update-blog.input.dto";
+import {BlogMdOutputType} from "../api/models/types/createBlogMdOutputType";
 
 
 @Injectable()
@@ -60,9 +61,10 @@ export class BlogsRepository {
     //     return {blogs, totalCount};
     // }
 
-    async update(id: string, updateBlogDto: UpdateBlogDto) {
-        return this.blogModel
+    async update(id: string, updateBlogDto: UpdateBlogDto): Promise<BlogMdOutputType | null> {
+        const result = this.blogModel
             .findByIdAndUpdate(id, updateBlogDto, {new: true})
             .exec();
+        return result as unknown as BlogMdOutputType;
     }
 }

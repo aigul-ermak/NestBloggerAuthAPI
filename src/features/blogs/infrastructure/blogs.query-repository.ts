@@ -2,6 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Blog, BlogDocument} from "../domain/blog.entity";
 import {isValidObjectId, Model} from "mongoose";
+import {BlogMdOutputType} from "../api/models/types/createBlogMdOutputType";
 
 
 @Injectable()
@@ -17,7 +18,7 @@ export class BlogsQueryRepository {
         return await this.blogModel.findById(blogId).exec() as BlogMdOutputType;
     }
 
-    async findAllBlogsByFilter(filter: any, sortBy: string, sortDirection: string, skip: number, limit: number) {
+    async findAllBlogsByFilter(filter: any, sortBy: string, sortDirection: string, skip: number, limit: number): Promise<BlogMdOutputType[]> {
 
         const result = await this.blogModel
             .find(filter)
@@ -26,7 +27,7 @@ export class BlogsQueryRepository {
             .limit(limit)
             .exec();
 
-        return result;
+        return result as BlogMdOutputType[];
     }
 
     async countDocuments(filter: any): Promise<number> {

@@ -15,7 +15,7 @@ import {
 import {BlogInputDto, CreatePostToBlogDto,} from './models/input/blog-input.dto';
 import {CreateBlogUseCaseCommand} from "./usecases/createBlogUseCase";
 import {GetBlogByIdUseCaseCommand} from "./usecases/getBlogByIdUseCase";
-import {BlogOutputModel} from "./models/output/blog.output.model";
+import {BlogOutputModel} from "./models/output/blogOutputModel";
 import {BasicAuthGuard} from "../../../infrastructure/guards/basic-auth.guard";
 import {SortBlogsDto} from "./models/input/sort-blog.input.dto";
 import {GetAllBlogsUseCaseCommand} from "./usecases/getAllBlogsUseCase";
@@ -29,6 +29,7 @@ import {Request} from "express";
 import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
 import {PostToBlogInputType} from "../../posts/api/models/types/input/createPostToBlogInputType";
 import {PostMdOutputType} from "../../posts/api/models/types/output/postMdOutputType";
+import {GetAllBlogOutputType} from "./models/types/getAllBlogOutputType";
 
 @Controller('blogs')
 export class BlogsController {
@@ -89,8 +90,7 @@ export class BlogsController {
 
     @Get()
     async getAllBlogs(
-        @Query() sortData: SortBlogsDto) {
-
+        @Query() sortData: SortBlogsDto): Promise<GetAllBlogOutputType> {
         return this.commandBus.execute(new GetAllBlogsUseCaseCommand(sortData));
     }
 

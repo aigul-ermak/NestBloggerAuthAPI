@@ -1,3 +1,5 @@
+import {BlogMdOutputType} from "../types/createBlogMdOutputType";
+
 export class BlogOutputModel {
     id: string;
     name: string
@@ -7,8 +9,8 @@ export class BlogOutputModel {
     isMembership: boolean
 }
 
-export const BlogOutputModelMapper = (blog: any) => {
-    const outputModel = new BlogOutputModel();
+export const BlogOutputModelMapper = (blog: BlogMdOutputType) => {
+    const outputModel: BlogOutputModel = new BlogOutputModel();
 
     outputModel.id = blog.id;
     outputModel.name = blog.name;

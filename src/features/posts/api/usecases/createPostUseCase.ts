@@ -8,8 +8,8 @@ import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query
 import {CreatePostMdOutputType} from "../models/types/output/createPostMdOutputType";
 import {PostMdOutputType} from "../models/types/output/postMdOutputType";
 import {BlogMdOutputType} from "../../../blogs/api/models/types/createBlogMdOutputType";
-import {PostToBlogInputType} from "../models/types/input/createPostToBlogInputType";
-import {PostLikeOutputModelMapper} from "../models/output/post-db.output.model";
+import {PostInputType} from "../models/types/input/createPostInputType";
+import {PostLikeOutputModelMapper, PostOutputModel} from "../models/output/post-db.output.model";
 
 
 export class CreatePostUseCaseCommand {
@@ -29,7 +29,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostUseCaseComma
     ) {
     }
 
-    async execute(command: CreatePostUseCaseCommand) {
+    async execute(command: CreatePostUseCaseCommand): Promise<PostOutputModel> {
 
         const blog: BlogMdOutputType | null = await this.blogsQueryRepository.getBlogById(command.post.blogId);
 
@@ -37,7 +37,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostUseCaseComma
             throw new NotFoundException(`Blog not found`);
         }
 
-        const newCreatePost: PostToBlogInputType = {
+        const newCreatePost: PostInputType = {
             ...command.post,
             blogName: blog.name,
             createdAt: new Date(Date.now()),

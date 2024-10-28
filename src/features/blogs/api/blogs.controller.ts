@@ -22,11 +22,12 @@ import {GetAllBlogsUseCaseCommand} from "./usecases/getAllBlogsUseCase";
 import {DeleteBlogByIdUseCaseCommand} from "./usecases/deleteBlogByIdUseCase";
 import {CommandBus} from "@nestjs/cqrs";
 import {UpdateBlogUseCaseCommand} from "./usecases/updateBlogUseCase";
-import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
 import {SortPostsDto} from "../../posts/api/models/input/sort-post.input.dto";
 import {GetAllPostsForBlogUseCaseCommand} from "./usecases/getAllPostsForBlogUseCase";
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
 import {Request} from "express";
+import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
+import {PostToBlogInputType} from "../../posts/api/models/types/input/createPostToBlogInputType";
 
 @Controller('blogs')
 export class BlogsController {
@@ -76,7 +77,7 @@ export class BlogsController {
             createPostToBlogDto: CreatePostToBlogDto,
     ) {
 
-        const createdPost = {
+        const createdPost: PostToBlogInputType = {
             ...createPostToBlogDto,
             blogId,
         }

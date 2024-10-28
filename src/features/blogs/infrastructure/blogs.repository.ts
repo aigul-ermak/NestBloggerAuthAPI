@@ -10,9 +10,9 @@ export class BlogsRepository {
     constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {
     }
 
-    async insert(blog: Blog) {
+    async insert(blog: Blog): Promise<BlogMdOutputType> {
         const res: BlogDocument[] = await this.blogModel.insertMany(blog);
-        return res[0];
+        return res[0] as BlogMdOutputType;
     }
 
     // async findAll(): Promise<Blog[]> {

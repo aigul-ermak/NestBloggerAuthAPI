@@ -44,7 +44,7 @@ export class BlogsController {
             createBlogDto: BlogInputDto,
     ): Promise<BlogOutputModel> {
 
-        const newBlogId = await this.commandBus.execute(new CreateBlogUseCaseCommand(createBlogDto))
+        const newBlogId: string = await this.commandBus.execute(new CreateBlogUseCaseCommand(createBlogDto));
 
         const blog: BlogOutputModel | null = await this.commandBus.execute(new GetBlogByIdUseCaseCommand(newBlogId));
 

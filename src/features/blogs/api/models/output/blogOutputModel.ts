@@ -1,4 +1,5 @@
 import {BlogMdOutputType} from "../types/createBlogMdOutputType";
+import {BlogDocument} from "../../../domain/blog.entity";
 
 export class BlogOutputModel {
     id: string;
@@ -9,7 +10,7 @@ export class BlogOutputModel {
     isMembership: boolean
 }
 
-export const BlogOutputModelMapper = (blog: BlogMdOutputType) => {
+export const BlogOutputModelMapper = (blog: BlogDocument) => {
     const outputModel: BlogOutputModel = new BlogOutputModel();
 
     outputModel.id = blog._id.toString();

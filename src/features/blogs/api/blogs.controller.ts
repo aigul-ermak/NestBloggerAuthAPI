@@ -28,6 +28,7 @@ import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.g
 import {Request} from "express";
 import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
 import {PostToBlogInputType} from "../../posts/api/models/types/input/createPostToBlogInputType";
+import {PostMdOutputType} from "../../posts/api/models/types/output/postMdOutputType";
 
 @Controller('blogs')
 export class BlogsController {
@@ -63,7 +64,7 @@ export class BlogsController {
     async updateBlog(
         @Param('id') id: string,
         @Body() updateBlogDto: BlogInputDto,
-    ) {
+    ): Promise<void> {
 
         return this.commandBus.execute(new UpdateBlogUseCaseCommand(id, updateBlogDto));
 
@@ -75,7 +76,7 @@ export class BlogsController {
         @Param('id') blogId: string,
         @Body()
             createPostToBlogDto: CreatePostToBlogDto,
-    ) {
+    ): Promise<PostMdOutputType> {
 
         const createdPost: PostToBlogInputType = {
             ...createPostToBlogDto,

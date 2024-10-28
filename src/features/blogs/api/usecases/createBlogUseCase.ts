@@ -21,7 +21,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogUseCaseComma
             command.createBlogDto.name, command.createBlogDto.description, command.createBlogDto.websiteUrl);
 
         const createdBlog: BlogMdOutputType = await this.blogsRepository.insert(blog);
-        console.log("createdBlog", createdBlog)
+
         return createdBlog.id;
     }
 }

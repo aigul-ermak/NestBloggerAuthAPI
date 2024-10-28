@@ -3,6 +3,4 @@ export type PostToBlogInputType = {
     shortDescription: string
     content: string
     blogId: string
-    blogName: string
-    createdAt: Date
 }

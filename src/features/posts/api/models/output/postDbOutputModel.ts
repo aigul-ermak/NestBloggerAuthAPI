@@ -1,5 +1,5 @@
 import {PostType} from "../input/post-db.input.model";
-import {PostMdOutputType} from "../types/output/postMdOutputType";
+import {PostDocument} from "../../../domain/posts.entity";
 
 export class PostOutputModel {
     id: string
@@ -21,8 +21,8 @@ export class PostOutputModel {
     };
 }
 
-export const PostLikeOutputModelMapper = (post: PostMdOutputType, newestLikes: any[], status: string): PostOutputModel => {
-    const outputModel = new PostOutputModel();
+export const PostLikeOutputModelMapper = (post: PostDocument, newestLikes: any[], status: string): PostOutputModel => {
+    const outputModel: PostOutputModel = new PostOutputModel();
 
     outputModel.id = post._id.toString();
     outputModel.title = post.title;

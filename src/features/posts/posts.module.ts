@@ -17,7 +17,7 @@ import {CqrsModule} from "@nestjs/cqrs";
     ],
     providers: [PostsService, PostsRepository, BlogsRepository, PostsQueryRepository],
 
-    exports: [PostsRepository, PostsQueryRepository],
+    exports: [PostsRepository, PostsQueryRepository, MongooseModule],
 })
 export class PostsModule {
 }

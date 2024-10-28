@@ -1,6 +1,4 @@
-import {HydratedDocument} from "mongoose";
-import {BlogDocument} from "../../../domain/blog.entity";
-import {BlogOutputModel} from "../output/blog.output.model";
+import {BlogOutputModel} from "../output/blogOutputModel";
 
 export type GetAllBlogOutputType = {
     pagesCount: number;

@@ -1,4 +1,16 @@
-import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Put, Req, UseGuards} from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    NotFoundException,
+    Param,
+    Put,
+    Req,
+    UnauthorizedException,
+    UseGuards
+} from "@nestjs/common";
 import {CommandBus} from "@nestjs/cqrs";
 import {JwtAuthGuard} from "../../../../infrastructure/guards/jwt-auth.guard";
 import {LikeStatusInputDto} from "../../../likePost/api/model/like-status.input.dto";
@@ -36,7 +48,12 @@ export class CommentsController {
         @Body() updateCommentDto: CommentInputDto,
         @Req() req,
     ) {
-        const userId = req['userId'];
+        // const userId = req['userId'];
+
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
 
         return await this.commandBus.execute(
             new UpdateCommentUseCaseCommand(id, updateCommentDto, userId));
@@ -52,7 +69,11 @@ export class CommentsController {
         @Body() likeStatus: LikeStatusInputDto,
         @Req() req: Request
     ) {
-        const userId = req['userId'];
+        // const userId = req['userId'];
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
 
         return await this.commandBus.execute(
             new CreateLikeForCommentUseCaseCommand(commentId, likeStatus, userId));

@@ -9,7 +9,8 @@ import {
     Post,
     Put,
     Query,
-    Req, UnauthorizedException,
+    Req,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import {Request} from 'express';
@@ -31,6 +32,7 @@ import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
 import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
 import {PostOutputModel} from "./models/output/postDbOutputModel";
 import {GetAllPostsForBlogOutputType} from "../../blogs/api/models/types/getAllPostsForBlogOutputType";
+import {GetAllCommentsForPostOutputType} from "../../blogs/api/models/types/getAllCommentsForPostOutputType.ts";
 
 
 class GetCommentsPostUseCaseCommand {

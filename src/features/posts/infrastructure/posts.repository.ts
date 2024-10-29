@@ -39,7 +39,6 @@ export class PostsRepository {
         });
     }
 
-
     async decrementLikeCount(id: string) {
         await this.postModel.updateOne({_id: id}, {
             $inc: {likesCount: -1}

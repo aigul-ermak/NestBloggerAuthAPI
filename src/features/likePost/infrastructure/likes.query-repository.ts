@@ -14,9 +14,6 @@ export class LikesQueryRepository {
     }
 
     async getNewestLikesForPost(postId: string) {
-        // return this.likeModel.find({parentId: parentId, status: LIKE_STATUS.LIKE})
-        //     .sort({createdAt: -1})
-        //     .limit(3);
         const newestLikes = await this.likeModel.find({parentId: postId, status: LIKE_STATUS.LIKE})
             .sort({createdAt: -1})
             .limit(3)

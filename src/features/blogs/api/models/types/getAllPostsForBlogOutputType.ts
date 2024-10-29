@@ -1,4 +1,4 @@
-import {PostOutputModel} from "../../../../posts/api/models/output/post-db.output.model";
+import {PostOutputModel} from "../../../../posts/api/models/output/postDbOutputModel";
 
 export type GetAllPostsForBlogOutputType = {
     pagesCount: number;

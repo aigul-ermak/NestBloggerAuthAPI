@@ -103,7 +103,8 @@ export class BlogsController {
         @Req() req: Request
     ): Promise<GetAllPostsForBlogOutputType> {
         const userId = req['userId'];
-
+        //todo
+        console.log("console.log()", userId)
         return await this.commandBus.execute(new GetAllPostsForBlogUseCaseCommand(blogId, sortData, userId));
     }
 
@@ -121,6 +122,5 @@ export class BlogsController {
         return this.commandBus.execute(
             new DeleteBlogByIdUseCaseCommand(blogId)
         );
-
     }
 }

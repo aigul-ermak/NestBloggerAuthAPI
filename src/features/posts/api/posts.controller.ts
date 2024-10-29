@@ -83,7 +83,11 @@ export class PostsController {
         @Body() likeStatus: LikeStatusInputDto,
         @Req() req: Request
     ) {
-        const userId = req['userId'];
+        // const userId = req['userId'];
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
 
         return await this.commandBus.execute(
             new CreateLikeForPostUseCaseCommand(postId, likeStatus, userId));
@@ -95,7 +99,11 @@ export class PostsController {
     async getPostById(
         @Param('id') id: string,
         @Req() req: Request): Promise<PostOutputModel> {
-        const userId = req['userId'];
+        // const userId = req['userId'];
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
 
         return await this.commandBus.execute(new GetPostByIdUseCaseCommand(id, userId));
     }

@@ -1,10 +1,9 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
-
-const request = require('supertest');
 import {AppModule} from './../src/app.module';
 import {applyAppSettings} from "../src/settings/apply.app.setting";
-import {BlogOutputModelMapper} from "../src/features/blogs/api/models/output/blog.output.model";
+
+const request = require('supertest');
 
 
 const HTTP_BASIC_USER = process.env.HTTP_BASIC_USER as string;

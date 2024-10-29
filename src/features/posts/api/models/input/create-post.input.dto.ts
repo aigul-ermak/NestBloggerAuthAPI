@@ -19,9 +19,6 @@ export class CreatePostInputDto {
     @Length(1, 1000, {message: "Length not correct"})
     content: string;
 
-    // @IsString()
-    // @Trim()
-    //@ValidateBlogExists({message: "Blog not correct"})
     @IsMongoId()
     blogId: string;
 }
@@ -43,9 +40,7 @@ export class CreatePostForBlogInputDto {
     content: string;
 
 
-    //@IsMongoId({message: "Invalid blogId format"})
     @IsString({message: 'It should be a string'})
-    // @Validate(IsBlogByIdExistsConstrain
     @IsValidBlogId()
     blogId: string;
 }

@@ -30,7 +30,7 @@ import {DeleteBlogByIdUseCase} from "./features/blogs/api/usecases/deleteBlogByI
 import {CqrsModule} from "@nestjs/cqrs";
 import {UpdateBlogUseCase} from "./features/blogs/api/usecases/updateBlogUseCase";
 import {Post, PostsEntity} from "./features/posts/domain/posts.entity";
-import {CreatePostUseCase} from "./features/posts/api/usecases/createPostUseCase";
+// import {CreatePostUseCase} from "./features/posts/api/usecases/createPostUseCase";
 import {PostsService} from "./features/posts/application/posts.service";
 import {GetPostByIdUseCase} from "./features/posts/api/usecases/getPostByIdUseCase";
 import {UpdatePostUseCase} from "./features/posts/api/usecases/updatePostUseCase";
@@ -85,8 +85,7 @@ import {CreateNewPasswordUseCase} from "./features/auth/api/usecases/createNewPa
 
 const usersProviders: Provider[] = [UsersRepository, UsersQueryRepository, UsersService];
 const blogsProviders: Provider[] = [BlogsRepository, BlogsQueryRepository, BlogsService]
-const useCases = [CreateUserUseCase, CreateBlogUseCase, GetBlogByIdUseCase, GetAllBlogsUseCase,
-    DeleteBlogByIdUseCase, UpdateBlogUseCase, CreatePostUseCase, GetPostByIdUseCase,
+const useCases = [CreateUserUseCase, GetPostByIdUseCase,
     UpdatePostUseCase, GetAllPostsUseCase, DeletePostByIdUseCase, GetAllPostsForBlogUseCase,
     CreateLikeForPostUseCase, GetCommentsForPostUseCase, CreateCommentForPostUseCase,
     CreateLikeForCommentUseCase, GetCommentByIdUseCase, DeleteCommentByIdUseCase, UpdateCommentUseCase,

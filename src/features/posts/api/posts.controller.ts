@@ -9,7 +9,7 @@ import {
     Post,
     Put,
     Query,
-    Req,
+    Req, UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import {Request} from 'express';
@@ -123,11 +123,13 @@ export class PostsController {
         @Param('id') postId: string,
         @Query() sortData: SortPostsDto,
         @Req() req: Request
-    ) {
-        const userId = req['userId'];
+    ): Promise<GetAllCommentsForPostOutputType> {
+        // const userId = req['userId'];
+        const userId = req.user?.userId;
+        console.log(userId)
 
         return await this.commandBus.execute(
-            new GetCommentsForPostUseCaseCommand(postId, sortData, userId)
+            new GetCommentsForPostUseCaseCommand(postId, sortData, userId!)
         );
 
     }

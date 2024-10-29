@@ -1,8 +1,11 @@
 import {NotFoundException} from "@nestjs/common";
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {PostsQueryRepository} from "../../infrastructure/posts.query-repository";
-import {PostOutputModel, PostsOutputModelMapper} from "../models/output/post-db.output.model";
+import {PostLikeOutputModelMapper, PostOutputModel} from "../models/output/postDbOutputModel";
 import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query-repository";
+import {PostDocument} from "../../domain/posts.entity";
+import {LikeDocument} from "../../../likePost/domain/like.entity";
+import {LIKE_STATUS} from "../../../../base/enum/enums";
 
 
 export class GetPostByIdUseCaseCommand {
@@ -23,22 +26,22 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdUseCaseCom
 
     async execute(command: GetPostByIdUseCaseCommand): Promise<PostOutputModel | null> {
 
-        const post = await this.postsQueryRepository.getPostById(command.id);
+        const post: PostDocument | null = await this.postsQueryRepository.getPostById(command.id);
 
-        if (post === null) {
+        if (!post) {
             throw new NotFoundException(`Post not found`);
         }
-        const newestLikes = await this.likesQueryRepository.getNewestLikesForPost(post.id);
+        const newestLikes: LikeDocument[] = await this.likesQueryRepository.getNewestLikesForPost(post.id);
 
-        let status = 'None';
+        let status: LIKE_STATUS | string = 'None';
 
         if (command.userId) {
-            const postLike = await this.likesQueryRepository.getLike(command.id, command.userId);
-            status = postLike ? postLike.status : 'None';
+            const likeToPost: LikeDocument | null = await this.likesQueryRepository.getLike(command.id, command.userId);
+
+            status = likeToPost ? likeToPost.status : 'None';
         }
 
-
-        return PostsOutputModelMapper(post, newestLikes, status);
+        return PostLikeOutputModelMapper(post, newestLikes, status);
 
     }
 }

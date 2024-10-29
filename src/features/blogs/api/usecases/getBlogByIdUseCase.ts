@@ -1,7 +1,8 @@
 import {NotFoundException} from "@nestjs/common";
-import {BlogOutputModel, BlogOutputModelMapper} from "../models/output/blog.output.model";
+import {BlogOutputModel, BlogOutputModelMapper} from "../models/output/blogOutputModel";
 import {BlogsQueryRepository} from "../../infrastructure/blogs.query-repository";
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
+import {BlogDocument} from "../../domain/blog.entity";
 
 
 export class GetBlogByIdUseCaseCommand {
@@ -16,8 +17,7 @@ export class GetBlogByIdUseCase implements ICommandHandler<GetBlogByIdUseCaseCom
 
     async execute(command: GetBlogByIdUseCaseCommand): Promise<BlogOutputModel | null> {
 
-        const blog = await this.blogsQueryRepository.getBlogById(command.id);
-
+        const blog: BlogDocument | null = await this.blogsQueryRepository.getBlogById(command.id);
 
         if (!blog) {
             throw new NotFoundException(`Blog not found`);

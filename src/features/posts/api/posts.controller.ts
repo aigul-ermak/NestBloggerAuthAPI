@@ -105,11 +105,14 @@ export class PostsController {
         @Param('id') postId: string,
         @Body() comment: CommentInputDto,
         @Req() req: Request,
-    ) {
-        const userId = req['userId'];
+    ): Promise<void> {
+        //const userId = req['userId'];
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
 
-        return await this.commandBus.execute(new CreateCommentForPostUseCaseCommand(postId, userId, comment));
-
+        await this.commandBus.execute(new CreateCommentForPostUseCaseCommand(postId, userId.toString(), comment));
     }
 
     @Get(':id/comments')

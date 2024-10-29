@@ -6,10 +6,10 @@ import {CreatePostForBlogInputDto} from "../models/input/create-post.input.dto";
 import {PostsQueryRepository} from "../../infrastructure/posts.query-repository";
 import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query-repository";
 import {CreatePostMdOutputType} from "../models/types/output/createPostMdOutputType";
-import {PostMdOutputType} from "../models/types/output/postMdOutputType";
-import {BlogMdOutputType} from "../../../blogs/api/models/types/createBlogMdOutputType";
 import {PostInputType} from "../models/types/input/createPostInputType";
-import {PostLikeOutputModelMapper, PostOutputModel} from "../models/output/post-db.output.model";
+import {PostLikeOutputModelMapper, PostOutputModel} from "../models/output/postDbOutputModel";
+import {PostDocument} from "../../domain/posts.entity";
+import {BlogDocument} from "../../../blogs/domain/blog.entity";
 
 
 export class CreatePostUseCaseCommand {
@@ -31,7 +31,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostUseCaseComma
 
     async execute(command: CreatePostUseCaseCommand): Promise<PostOutputModel> {
 
-        const blog: BlogMdOutputType | null = await this.blogsQueryRepository.getBlogById(command.post.blogId);
+        const blog: BlogDocument | null = await this.blogsQueryRepository.getBlogById(command.post.blogId);
 
         if (!blog) {
             throw new NotFoundException(`Blog not found`);
@@ -45,7 +45,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostUseCaseComma
 
         const createdPost: CreatePostMdOutputType = await this.postsRepository.insert(newCreatePost);
 
-        const post: PostMdOutputType = await this.postsQueryRepository.getPostById(createdPost.id);
+        const post: PostDocument = await this.postsQueryRepository.getPostById(createdPost.id);
 
         if (!post) {
             throw new NotFoundException(`Post not found`);

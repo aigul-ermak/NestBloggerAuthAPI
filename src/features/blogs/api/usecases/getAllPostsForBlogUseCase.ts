@@ -1,14 +1,14 @@
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {PostsQueryRepository} from "../../../posts/infrastructure/posts.query-repository";
 import {SortPostsDto} from "../../../posts/api/models/input/sort-post.input.dto";
-import {PostLikeOutputModelMapper, PostOutputModel} from "../../../posts/api/models/output/post-db.output.model";
+import {PostLikeOutputModelMapper, PostOutputModel} from "../../../posts/api/models/output/postDbOutputModel";
 import {BlogsQueryRepository} from "../../infrastructure/blogs.query-repository";
 import {NotFoundException} from "@nestjs/common";
 import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query-repository";
 import {PostDocument} from "../../../posts/domain/posts.entity";
-import {BlogMdOutputType} from "../models/types/createBlogMdOutputType";
 import {LIKE_STATUS} from "../../../../base/enum/enums";
 import {GetAllPostsForBlogOutputType} from "../models/types/getAllPostsForBlogOutputType";
+import {BlogDocument} from "../../domain/blog.entity";
 
 
 export class GetAllPostsForBlogUseCaseCommand {
@@ -31,7 +31,7 @@ export class GetAllPostsForBlogUseCase implements ICommandHandler<GetAllPostsFor
         const page: number = command.sortData.pageNumber ?? 1;
         const size: number = command.sortData.pageSize ?? 10;
 
-        const blog: BlogMdOutputType | null = await this.blogsQueryRepository.getBlogById(command.blogId);
+        const blog: BlogDocument | null = await this.blogsQueryRepository.getBlogById(command.blogId);
 
         if (!blog) {
             throw new NotFoundException('Blog not found');

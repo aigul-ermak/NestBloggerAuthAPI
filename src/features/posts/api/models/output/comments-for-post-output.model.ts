@@ -1,21 +1,22 @@
-export class PostCommentOutputModel {
+import {CommentDocument} from "../../../../comments/domain/comment.entity";
+
+export class CommentsForPostOutputModel {
     id: string;
     content: string;
     commentatorInfo: {
         userId: string,
         userLogin: string
     };
-    createdAt: Date;
+    createdAt: string;
     likesInfo: {
-        likesCount: string;
-        dislikesCount: string;
+        likesCount: number;
+        dislikesCount: number;
         myStatus: string;
     }
 }
 
-export const PostCommentOutputModelMapper = (postComment: any, status: string): PostCommentOutputModel => {
-    //TODO type?
-    const outputModel = new PostCommentOutputModel();
+export const CommentsForPostOutputModelMapper = (postComment: CommentDocument, status: string): CommentsForPostOutputModel => {
+    const outputModel: CommentsForPostOutputModel = new CommentsForPostOutputModel();
 
     outputModel.id = postComment._id.toString();
     outputModel.content = postComment.content;
@@ -27,8 +28,8 @@ export const PostCommentOutputModelMapper = (postComment: any, status: string): 
     outputModel.createdAt = postComment.createdAt;
 
     outputModel.likesInfo = {
-        likesCount: postComment.likesCount ?? 0,
-        dislikesCount: postComment.dislikesCount ?? 0,
+        likesCount: postComment.likesCount,
+        dislikesCount: postComment.dislikesCount,
         myStatus: status,
     }
 

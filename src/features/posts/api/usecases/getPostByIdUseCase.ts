@@ -35,7 +35,7 @@ export class GetPostByIdUseCase implements ICommandHandler<GetPostByIdUseCaseCom
             login: string;
             userId: string
         }[] = await this.likesQueryRepository.getNewestLikesForPost(post.id);
-        console.error("newestLikes", newestLikes)
+
         let status = 'None';
 
         if (command.userId) {

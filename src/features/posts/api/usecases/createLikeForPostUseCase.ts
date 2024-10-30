@@ -32,7 +32,7 @@ export class CreateLikeForPostUseCase implements ICommandHandler<CreateLikeForPo
 
     async execute(command: CreateLikeForPostUseCaseCommand) {
 
-        const post: PostDocument = await this.postsQueryRepository.getPostById(command.postId);
+        const post: PostDocument | null = await this.postsQueryRepository.getPostById(command.postId);
 
 
         if (!post) {
@@ -75,7 +75,7 @@ export class CreateLikeForPostUseCase implements ICommandHandler<CreateLikeForPo
         } else {
 
             const currentLike: LikeDocument | null = await this.likeQueryRepository.getLike(command.postId, command.userId);
-            console.log("currentLike", currentLike)
+
             if (!currentLike) {
                 throw new BadRequestException();
             }

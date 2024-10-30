@@ -112,7 +112,7 @@ const useCases = [CreateUserUseCase, GetPostByIdUseCase,
                 const databaseSettings = configService.get('databaseSettings', {
                     infer: true,
                 });
-                console.error("env", `"${JSON.stringify(environmentSettings)}"`)
+
                 const uri = environmentSettings.isTesting
                     ? databaseSettings.MONGO_CONNECTION_URI_FOR_TESTS
                     : databaseSettings.MONGO_CONNECTION_URI;

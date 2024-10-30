@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -33,6 +34,7 @@ import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
 import {PostOutputModel} from "./models/output/postDbOutputModel";
 import {GetAllPostsForBlogOutputType} from "../../blogs/api/models/types/getAllPostsForBlogOutputType";
 import {GetAllCommentsForPostOutputType} from "../../blogs/api/models/types/getAllCommentsForPostOutputType.ts";
+import {Types} from "mongoose";
 
 
 class GetCommentsPostUseCaseCommand {
@@ -88,6 +90,9 @@ export class PostsController {
         if (!userId) {
             throw new UnauthorizedException('User ID is missing');
         }
+        if (!Types.ObjectId.isValid(postId)) {
+            throw new BadRequestException(`Invalid ID format`);
+        }
 
         return await this.commandBus.execute(
             new CreateLikeForPostUseCaseCommand(postId, likeStatus, userId));
@@ -95,17 +100,22 @@ export class PostsController {
 
 
     @Get(':id')
+    @HttpCode(200)
     @UseGuards(JwtAuthNullableGuard)
     async getPostById(
         @Param('id') id: string,
         @Req() req: Request): Promise<PostOutputModel> {
-        // const userId = req['userId'];
-        const userId = req.user?.userId;
-        if (!userId) {
-            throw new UnauthorizedException('User ID is missing');
-        }
+        const userId = req['userId'];
+        // const userId = req.user?.userId;
 
-        return await this.commandBus.execute(new GetPostByIdUseCaseCommand(id, userId));
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequestException(`Invalid ID format`);
+        }
+        // if (!userId) {
+        //     throw new UnauthorizedException('User ID is missing');
+        // }
+
+        return await this.commandBus.execute(new GetPostByIdUseCaseCommand(id, userId!));
     }
 
     @Post(':id/comments')
@@ -136,7 +146,6 @@ export class PostsController {
     ): Promise<GetAllCommentsForPostOutputType> {
         // const userId = req['userId'];
         const userId = req.user?.userId;
-        console.log(userId)
 
         return await this.commandBus.execute(
             new GetCommentsForPostUseCaseCommand(postId, sortData, userId!)

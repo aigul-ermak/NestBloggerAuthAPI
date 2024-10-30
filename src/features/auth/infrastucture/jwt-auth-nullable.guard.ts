@@ -14,7 +14,6 @@ export class JwtAuthNullableGuard implements CanActivate {
         const accessSecret = this.configService.get<string>('jwtSettings.JWT_ACCESS_SECRET');
         const accessExpiry = this.configService.get<string>('jwtSettings.ACCESS_TOKEN_EXPIRY');
 
-
         const request = context.switchToHttp().getRequest<Request>();
         const authHeader = request.headers.authorization;
 
@@ -27,10 +26,25 @@ export class JwtAuthNullableGuard implements CanActivate {
         try {
             const decoded = this.jwtService.verify(token, {secret: accessSecret});
             request['userId'] = decoded.id;
+
+
+            // request['user'] = {
+            //     userId: decoded.id,
+            //     deviceId: decoded.deviceId,
+            //     userIP: request.ip ?? 'testip',
+            //     userAgent: request.headers['user-agent'] ?? 'test-user-agent'
+            // };
+
             return true;
         } catch (error) {
 
             request['userId'] = null;
+            // request['user'] = {
+            //     userId: "",
+            //     deviceId: "",
+            //     userIP: "",
+            //     userAgent: ""
+            // };
             return true;
         }
     }

@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -10,13 +11,12 @@ import {
     Put,
     Query,
     Req,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import {Request} from 'express';
 import {CreatePostForBlogInputDto} from './models/input/create-post.input.dto';
 import {CommandBus} from "@nestjs/cqrs";
-import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
-import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
 import {BasicAuthGuard} from "../../../infrastructure/guards/basic-auth.guard";
 import {UpdatePostUseCaseCommand} from "./usecases/updatePostUseCase";
 import {SortPostsDto} from "./models/input/sort-post.input.dto";
@@ -29,6 +29,13 @@ import {CreateCommentForPostUseCaseCommand} from "./usecases/createCommentForPos
 import {CommentInputDto} from "../../comments/api/model/input/comment-input.dto";
 import {GetCommentsForPostUseCaseCommand} from "./usecases/getCommentsForPostUseCase";
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
+import {GetPostByIdUseCaseCommand} from "./usecases/getPostByIdUseCase";
+import {CreatePostUseCaseCommand} from "./usecases/createPostUseCase";
+import {PostOutputModel} from "./models/output/postDbOutputModel";
+import {GetAllPostsForBlogOutputType} from "../../blogs/api/models/types/getAllPostsForBlogOutputType";
+import {GetAllCommentsForPostOutputType} from "../../blogs/api/models/types/getAllCommentsForPostOutputType.ts";
+import {Types} from "mongoose";
+import {CommentOutputModel} from "../../comments/api/model/output/comment-output.model";
 
 
 class GetCommentsPostUseCaseCommand {
@@ -51,7 +58,7 @@ export class PostsController {
     async create(
         @Body()
             createPostDto: CreatePostForBlogInputDto,
-    ) {
+    ): Promise<PostOutputModel> {
         return await this.commandBus.execute(
             new CreatePostUseCaseCommand(createPostDto)
         );
@@ -79,7 +86,14 @@ export class PostsController {
         @Body() likeStatus: LikeStatusInputDto,
         @Req() req: Request
     ) {
-        const userId = req['userId'];
+        // const userId = req['userId'];
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
+        if (!Types.ObjectId.isValid(postId)) {
+            throw new BadRequestException(`Invalid ID format`);
+        }
 
         return await this.commandBus.execute(
             new CreateLikeForPostUseCaseCommand(postId, likeStatus, userId));
@@ -87,13 +101,22 @@ export class PostsController {
 
 
     @Get(':id')
+    @HttpCode(200)
     @UseGuards(JwtAuthNullableGuard)
     async getPostById(
         @Param('id') id: string,
-        @Req() req: Request) {
+        @Req() req: Request): Promise<PostOutputModel> {
         const userId = req['userId'];
+        // const userId = req.user?.userId;
 
-        return await this.commandBus.execute(new GetPostByIdUseCaseCommand(id, userId));
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequestException(`Invalid ID format`);
+        }
+        // if (!userId) {
+        //     throw new UnauthorizedException('User ID is missing');
+        // }
+
+        return await this.commandBus.execute(new GetPostByIdUseCaseCommand(id, userId!));
     }
 
     @Post(':id/comments')
@@ -103,11 +126,15 @@ export class PostsController {
         @Param('id') postId: string,
         @Body() comment: CommentInputDto,
         @Req() req: Request,
-    ) {
-        const userId = req['userId'];
+    ): Promise<CommentOutputModel> {
+        //const userId = req['userId'];
+        const userId = req.user?.userId;
+
+        if (!userId) {
+            throw new UnauthorizedException('User ID is missing');
+        }
 
         return await this.commandBus.execute(new CreateCommentForPostUseCaseCommand(postId, userId, comment));
-
     }
 
     @Get(':id/comments')
@@ -118,11 +145,12 @@ export class PostsController {
         @Param('id') postId: string,
         @Query() sortData: SortPostsDto,
         @Req() req: Request
-    ) {
-        const userId = req['userId'];
+    ): Promise<GetAllCommentsForPostOutputType> {
+        // const userId = req['userId'];
+        const userId = req.user?.userId;
 
         return await this.commandBus.execute(
-            new GetCommentsForPostUseCaseCommand(postId, sortData, userId)
+            new GetCommentsForPostUseCaseCommand(postId, sortData, userId!)
         );
 
     }
@@ -133,9 +161,14 @@ export class PostsController {
     @UseGuards(JwtAuthNullableGuard)
     async getAllPosts(
         @Query() sortData: SortPostsDto,
-        @Req() req: Request) {
+        @Req() req: Request): Promise<GetAllPostsForBlogOutputType> {
 
         const userId = req['userId'];
+
+        if (!Types.ObjectId.isValid(userId)) {
+            throw new BadRequestException(`Invalid ID format`);
+        }
+        //const userId = req.user?.userId;
 
         return await this.commandBus.execute(new GetAllPostsUseCaseCommand(sortData, userId));
 

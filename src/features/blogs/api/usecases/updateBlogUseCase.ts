@@ -3,6 +3,8 @@ import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {UpdateBlogDto} from "../models/input/update-blog.input.dto";
 import {BlogsQueryRepository} from "../../infrastructure/blogs.query-repository";
 import {NotFoundException} from "@nestjs/common";
+import {BlogMdOutputType} from "../models/types/createBlogMdOutputType";
+import {BlogDocument} from "../../domain/blog.entity";
 
 
 export class UpdateBlogUseCaseCommand {
@@ -18,9 +20,9 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogUseCaseComma
     ) {
     }
 
-    async execute(command: UpdateBlogUseCaseCommand) {
+    async execute(command: UpdateBlogUseCaseCommand): Promise<BlogDocument> {
 
-        const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
+        const blog: BlogDocument | null = await this.blogsQueryRepository.getBlogById(command.blogId);
 
         if (!blog) {
             throw new NotFoundException(`Blog not found`);
@@ -28,6 +30,6 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogUseCaseComma
 
         const {blogId, updateBlogDto} = command;
 
-        return await this.blogsRepository.update(blogId, updateBlogDto);
+        return await this.blogsRepository.update(blogId, updateBlogDto) as BlogMdOutputType;
     }
 }

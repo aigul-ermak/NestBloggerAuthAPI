@@ -2,6 +2,7 @@ import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {PostsRepository} from "../../infrastructure/posts.repository";
 import {PostsQueryRepository} from "../../infrastructure/posts.query-repository";
 import {NotFoundException} from "@nestjs/common";
+import {PostDocument} from "../../domain/posts.entity";
 
 export class DeletePostByIdUseCaseCommand {
     constructor(public id: string) {
@@ -16,9 +17,9 @@ export class DeletePostByIdUseCase implements ICommandHandler<DeletePostByIdUseC
     ) {
     }
 
-    async execute(command: DeletePostByIdUseCaseCommand) {
+    async execute(command: DeletePostByIdUseCaseCommand): Promise<boolean> {
 
-        const post = await this.postsQueryRepository.getPostById(command.id)
+        const post: PostDocument | null = await this.postsQueryRepository.getPostById(command.id)
 
         if (!post) {
             throw new NotFoundException(`Post not found`);

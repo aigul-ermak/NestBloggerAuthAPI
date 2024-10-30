@@ -9,7 +9,7 @@ export class CommentsQueryRepository {
     constructor(@InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {
     }
 
-    async getCommentById(commentId: string) {
+    async getCommentById(commentId: string): Promise<CommentDocument | null> {
         return this.commentModel.findOne({_id: commentId});
     }
 
@@ -17,13 +17,13 @@ export class CommentsQueryRepository {
         return this.commentModel.countDocuments({postId}).exec();
     }
 
-    async findCommentssByPostIdPaginated(
+    async findCommentsByPostIdPaginated(
         postId: string,
         sort: string,
         sortDirection: 'asc' | 'desc',
         page: number,
         pageSize: number,
-    ) {
+    ): Promise<CommentDocument[]> {
         const validPage = Math.max(page, 1);
         const skip = (validPage - 1) * pageSize;
         const sortOption: { [key: string]: SortOrder } = {

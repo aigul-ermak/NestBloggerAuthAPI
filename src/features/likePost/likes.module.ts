@@ -12,6 +12,7 @@ import {PostsModule} from "../posts/posts.module";
         PostsModule
     ],
     providers: [LikesRepository, LikesQueryRepository],
+    exports: [LikesQueryRepository, MongooseModule]
 })
 export class LikesModule {
 }

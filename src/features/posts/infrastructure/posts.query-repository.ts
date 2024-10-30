@@ -1,7 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model, SortOrder} from 'mongoose';
+import {Model, SortOrder, Types} from 'mongoose';
 import {Post, PostDocument} from '../domain/posts.entity';
+import {PostMdOutputType} from "../api/models/types/output/postMdOutputType";
 
 
 @Injectable()
@@ -13,8 +14,9 @@ export class PostsQueryRepository {
         return this.postModel.find().exec();
     }
 
-    async getPostById(id: string) {
-        return this.postModel.findById(id).exec();
+    async getPostById(id: string): Promise<PostMdOutputType | null> {
+        const result = await this.postModel.findById(id).exec();
+        return result as unknown as PostMdOutputType;
     }
 
     async findAllPostsPaginated(
@@ -22,12 +24,11 @@ export class PostsQueryRepository {
         sortDirection: string,
         skip: number,
         limit: number
-    ) {
+    ): Promise<PostDocument[]> {
         const sortOrder = sortDirection === 'desc' ? -1 : 1;
 
         const result = await this.postModel
             .find()
-            .lean()
             .sort({[sortBy]: sortOrder})
             .skip(skip)
             .limit(limit)
@@ -41,7 +42,7 @@ export class PostsQueryRepository {
     }
 
     async findByBlogId(blogId: string): Promise<PostDocument[]> {
-        return this.postModel.find({blogId}).exec();
+        return this.postModel.find({blogId});
     }
 
     async countByBlogId(blogId: string) {
@@ -61,12 +62,13 @@ export class PostsQueryRepository {
             [sort]: sortDirection === 'asc' ? 1 : -1,
         };
 
-        return this.postModel
+        const res: PostDocument[] = await this.postModel
             .find({blogId})
             .sort(sortOption)
             .skip(skip)
             .limit(pageSize)
             .exec()
 
+        return res as PostDocument[];
     }
 }

@@ -5,8 +5,10 @@ import {PostsQueryRepository} from "../../infrastructure/posts.query-repository"
 import {LikesRepository} from "../../../likePost/infrastructure/likes.repository";
 import {UsersQueryRepository} from "../../../users/infrastructure/users.query-repository";
 import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query-repository";
-import {LIKE_STATUS} from "../../../likePost/domain/like.entity";
+import {LIKE_STATUS, LikeDocument} from "../../../likePost/domain/like.entity";
 import {LikeStatusInputDto} from "../../../likePost/api/model/like-status.input.dto";
+import {PostDocument} from "../../domain/posts.entity";
+import {UserOutputModel} from "../../../users/api/models/output/user.output.model";
 
 
 export class CreateLikeForPostUseCaseCommand {
@@ -30,24 +32,30 @@ export class CreateLikeForPostUseCase implements ICommandHandler<CreateLikeForPo
 
     async execute(command: CreateLikeForPostUseCaseCommand) {
 
-        const post = await this.postsQueryRepository.getPostById(command.postId);
+        const post: PostDocument | null = await this.postsQueryRepository.getPostById(command.postId);
 
 
         if (!post) {
             throw new NotFoundException(`Post not found`);
         }
 
-        const user = await this.usersQueryRepository.getUserById(command.userId);
+        const user: UserOutputModel | null = await this.usersQueryRepository.getUserById(command.userId);
 
         if (!user) {
             throw new BadRequestException();
         }
 
-        const isLikeExist = await this.likeQueryRepository.checkLike({parentId: post.id, userId: user.id,});
+        const isLikeExist: boolean = await this.likeQueryRepository.checkLike({parentId: post.id, userId: user.id,});
 
         if (!isLikeExist) {
 
-            const newLike = {
+            const newLike: {
+                createdAt: number;
+                login: string | undefined;
+                userId: string;
+                parentId: string;
+                status: LIKE_STATUS
+            } = {
                 status: command.likeStatus.likeStatus,
                 userId: command.userId,
                 parentId: command.postId,
@@ -55,7 +63,7 @@ export class CreateLikeForPostUseCase implements ICommandHandler<CreateLikeForPo
                 createdAt: Date.now(),
             };
 
-            const res = await this.likesRepository.createLike(newLike);
+            await this.likesRepository.createLike(newLike);
 
             if (command.likeStatus.likeStatus == LIKE_STATUS.LIKE) {
                 await this.postsRepository.incrementLikeCount(command.postId);
@@ -64,14 +72,22 @@ export class CreateLikeForPostUseCase implements ICommandHandler<CreateLikeForPo
                 await this.postsRepository.incrementDislikeCount(command.postId,);
             }
 
-            return res;
-
         } else {
 
-            const currentLike = await this.likeQueryRepository.getLike(command.postId, command.userId);
+            const currentLike: LikeDocument | null = await this.likeQueryRepository.getLike(command.postId, command.userId);
 
+            if (!currentLike) {
+                throw new BadRequestException();
+            }
             if (command.likeStatus.likeStatus === LIKE_STATUS.NONE) {
+                if (currentLike.status === LIKE_STATUS.LIKE) {
+                    await this.likesRepository.decrementLikeCount(command.postId);
+                } else if (currentLike.status === LIKE_STATUS.DISLIKE) {
+                    await this.likesRepository.decrementDislikeCount(command.postId);
+                }
                 await this.likesRepository.deleteLikeStatus(command.postId, command.userId);
+                return;
+
 
                 const updatedLikesInfo = {
                     likesCount: 0,
@@ -84,29 +100,25 @@ export class CreateLikeForPostUseCase implements ICommandHandler<CreateLikeForPo
             if (command.likeStatus.likeStatus === LIKE_STATUS.LIKE) {
                 if (currentLike!.status === LIKE_STATUS.LIKE) {
                     return;
-                    // await this.postsRepository.decrementLikeCount(command.postId);
-                    // await this.likesRepository.deleteLikeStatus(command.postId, command.userId);
 
                 } else if (currentLike!.status === LIKE_STATUS.DISLIKE) {
                     await this.postsRepository.incrementLikeCount(command.postId);
                     await this.postsRepository.decrementDislikeCount(command.postId);
-                    await this.likesRepository.updateLike(currentLike!._id.toString(), {status: LIKE_STATUS.LIKE});
+
                 }
+                await this.likesRepository.updateLike(currentLike!._id.toString(), {status: LIKE_STATUS.LIKE});
             }
 
             if (command.likeStatus.likeStatus === LIKE_STATUS.DISLIKE) {
-                if (currentLike!.status === LIKE_STATUS.LIKE) {
+                if (currentLike!.status === LIKE_STATUS.DISLIKE) {
+                    return;
+                } else if (currentLike!.status === LIKE_STATUS.LIKE) {
+
                     await this.postsRepository.decrementLikeCount(command.postId);
                     await this.postsRepository.incrementDislikeCount(command.postId);
-                    await this.likesRepository.updateLike(currentLike!._id.toString(), {status: LIKE_STATUS.DISLIKE});
-
-                } else if (currentLike!.status === LIKE_STATUS.DISLIKE) {
-                    // await this.postsRepository.decrementDislikeCount(command.postId);
-                    // await this.likesRepository.deleteLikeStatus(command.postId, command.userId);
-                    return;
                 }
+                await this.likesRepository.updateLike(currentLike!._id.toString(), {status: LIKE_STATUS.DISLIKE});
             }
-
         }
     }
 }

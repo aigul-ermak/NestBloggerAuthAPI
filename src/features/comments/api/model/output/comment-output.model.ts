@@ -1,3 +1,5 @@
+import {CommentDocument} from "../../../domain/comment.entity";
+
 export class CommentOutputModel {
     id: string;
     content: string;
@@ -5,17 +7,16 @@ export class CommentOutputModel {
         userId: string,
         userLogin: string
     };
-    createdAt: Date;
+    createdAt: number;
     likesInfo: {
-        likesCount: string;
-        dislikesCount: string;
+        likesCount: number;
+        dislikesCount: number;
         myStatus: string;
     }
 }
 
-export const CommentOutputModelMapper = (newComment: any): CommentOutputModel => {
-    //TODO type?
-    const outputModel = new CommentOutputModel();
+export const CommentOutputModelMapper = (newComment: CommentDocument): CommentOutputModel => {
+    const outputModel: CommentOutputModel = new CommentOutputModel();
 
     outputModel.id = newComment._id.toString();
     outputModel.content = newComment.content;
@@ -23,11 +24,11 @@ export const CommentOutputModelMapper = (newComment: any): CommentOutputModel =>
         userId: newComment.commentatorInfo.userId,
         userLogin: newComment.commentatorInfo.userLogin
     }
-    outputModel.createdAt = newComment.createdAt;
+    outputModel.createdAt = +newComment.createdAt;
 
     outputModel.likesInfo = {
-        likesCount: newComment.likesCount ?? 0,
-        dislikesCount: newComment.dislikesCount ?? 0,
+        likesCount: newComment.likesCount,
+        dislikesCount: newComment.dislikesCount,
         myStatus: 'None',
     }
 

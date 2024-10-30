@@ -15,18 +15,22 @@ import {
 import {BlogInputDto, CreatePostToBlogDto,} from './models/input/blog-input.dto';
 import {CreateBlogUseCaseCommand} from "./usecases/createBlogUseCase";
 import {GetBlogByIdUseCaseCommand} from "./usecases/getBlogByIdUseCase";
-import {BlogOutputModel} from "./models/output/blog.output.model";
+import {BlogOutputModel} from "./models/output/blogOutputModel";
 import {BasicAuthGuard} from "../../../infrastructure/guards/basic-auth.guard";
 import {SortBlogsDto} from "./models/input/sort-blog.input.dto";
 import {GetAllBlogsUseCaseCommand} from "./usecases/getAllBlogsUseCase";
 import {DeleteBlogByIdUseCaseCommand} from "./usecases/deleteBlogByIdUseCase";
 import {CommandBus} from "@nestjs/cqrs";
 import {UpdateBlogUseCaseCommand} from "./usecases/updateBlogUseCase";
-import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
 import {SortPostsDto} from "../../posts/api/models/input/sort-post.input.dto";
 import {GetAllPostsForBlogUseCaseCommand} from "./usecases/getAllPostsForBlogUseCase";
 import {JwtAuthNullableGuard} from "../../auth/infrastucture/jwt-auth-nullable.guard";
 import {Request} from "express";
+import {CreatePostUseCaseCommand} from "../../posts/api/usecases/createPostUseCase";
+import {PostToBlogInputType} from "../../posts/api/models/types/input/createPostToBlogInputType";
+import {PostMdOutputType} from "../../posts/api/models/types/output/postMdOutputType";
+import {GetAllBlogOutputType} from "./models/types/getAllBlogOutputType";
+import {GetAllPostsForBlogOutputType} from "./models/types/getAllPostsForBlogOutputType";
 
 @Controller('blogs')
 export class BlogsController {
@@ -44,7 +48,7 @@ export class BlogsController {
             createBlogDto: BlogInputDto,
     ): Promise<BlogOutputModel> {
 
-        const newBlogId = await this.commandBus.execute(new CreateBlogUseCaseCommand(createBlogDto))
+        const newBlogId: string = await this.commandBus.execute(new CreateBlogUseCaseCommand(createBlogDto));
 
         const blog: BlogOutputModel | null = await this.commandBus.execute(new GetBlogByIdUseCaseCommand(newBlogId));
 
@@ -62,7 +66,7 @@ export class BlogsController {
     async updateBlog(
         @Param('id') id: string,
         @Body() updateBlogDto: BlogInputDto,
-    ) {
+    ): Promise<void> {
 
         return this.commandBus.execute(new UpdateBlogUseCaseCommand(id, updateBlogDto));
 
@@ -74,9 +78,9 @@ export class BlogsController {
         @Param('id') blogId: string,
         @Body()
             createPostToBlogDto: CreatePostToBlogDto,
-    ) {
+    ): Promise<PostMdOutputType> {
 
-        const createdPost = {
+        const createdPost: PostToBlogInputType = {
             ...createPostToBlogDto,
             blogId,
         }
@@ -87,8 +91,7 @@ export class BlogsController {
 
     @Get()
     async getAllBlogs(
-        @Query() sortData: SortBlogsDto) {
-
+        @Query() sortData: SortBlogsDto): Promise<GetAllBlogOutputType> {
         return this.commandBus.execute(new GetAllBlogsUseCaseCommand(sortData));
     }
 
@@ -98,16 +101,15 @@ export class BlogsController {
         @Param('id') blogId: string,
         @Query() sortData: SortPostsDto,
         @Req() req: Request
-    ) {
+    ): Promise<GetAllPostsForBlogOutputType> {
         const userId = req['userId'];
-
+        //todo
+        console.log("console.log()", userId)
         return await this.commandBus.execute(new GetAllPostsForBlogUseCaseCommand(blogId, sortData, userId));
-
-
     }
 
     @Get(':id')
-    async getBlogById(@Param('id') id: string) {
+    async getBlogById(@Param('id') id: string): Promise<BlogOutputModel> {
         return this.commandBus.execute(new GetBlogByIdUseCaseCommand(id));
     }
 
@@ -120,6 +122,5 @@ export class BlogsController {
         return this.commandBus.execute(
             new DeleteBlogByIdUseCaseCommand(blogId)
         );
-
     }
 }

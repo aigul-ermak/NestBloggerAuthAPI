@@ -13,7 +13,7 @@ export class CommentsRepository {
     }
 
     //TODO type
-    async createComment(newComment: any) {
+    async createComment(newComment: any): Promise<string> {
         const res = await this.commentModel.create(newComment)
         return res._id.toString();
     }
@@ -23,12 +23,6 @@ export class CommentsRepository {
             .findByIdAndUpdate(id, updateCommentDto, {new: true})
             .exec();
     }
-
-    // async updateCommentAfterLike(id: string, likeStatus: LIKE_STATUS) {
-    //     return this.commentModel
-    //         .findByIdAndUpdate(id, likeStatus, {new: true})
-    //         .exec();
-    // }
 
     async updateCommentStatusToNone(commentId: string, myStatus: string): Promise<void> {
         await this.commentModel.findByIdAndUpdate(commentId, {myStatus})

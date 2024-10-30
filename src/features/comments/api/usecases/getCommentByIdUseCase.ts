@@ -3,6 +3,8 @@ import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
 import {CommentsQueryRepository} from "../../infrastructure/comments.query-repository";
 import {CommentLikeOutputModelMapper,} from "../model/output/comment-output.model";
 import {LikesCommentQueryRepository} from "../../../likeComment/infrastructure/likes-comment.query-repository";
+import {CommentDocument} from "../../domain/comment.entity";
+import {LIKE_STATUS} from "../../../../base/enum/enums";
 
 
 export class GetCommentByIdUseCaseCommand {
@@ -22,19 +24,19 @@ export class GetCommentByIdUseCase implements ICommandHandler<GetCommentByIdUseC
 
     async execute(command: GetCommentByIdUseCaseCommand) {
 
-        const comment = await this.commentsQueryRepository.getCommentById(command.id);
+        const comment: CommentDocument | null = await this.commentsQueryRepository.getCommentById(command.id);
 
 
         if (!comment) {
             throw new NotFoundException(`Comment not found`);
         }
 
-        let status = 'None';
+        let status: LIKE_STATUS = LIKE_STATUS.NONE;
 
         if (command.userId) {
             const commentLike = await this.likesCommentQueryRepository.getLike(command.id, command.userId);
 
-            status = commentLike ? commentLike.status : 'None';
+            status = commentLike ? commentLike.status : LIKE_STATUS.NONE;
         }
 
         return CommentLikeOutputModelMapper(comment, status);

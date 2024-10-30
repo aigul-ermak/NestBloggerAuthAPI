@@ -7,6 +7,9 @@ import {CommentsRepository} from "../../infrastructure/comments.repository";
 import {CommentsQueryRepository} from "../../infrastructure/comments.query-repository";
 import {LikesCommentRepository} from "../../../likeComment/infrastructure/likes-comment.repository";
 import {LikesCommentQueryRepository} from "../../../likeComment/infrastructure/likes-comment.query-repository";
+import {CommentDocument} from "../../domain/comment.entity";
+import {UserOutputModel} from "../../../users/api/models/output/user.output.model";
+import {LikeCommentDocument} from "../../../likeComment/domain/like-comment.entity";
 
 
 export class CreateLikeForCommentUseCaseCommand {
@@ -30,26 +33,32 @@ export class CreateLikeForCommentUseCase implements ICommandHandler<CreateLikeFo
 
     async execute(command: CreateLikeForCommentUseCaseCommand) {
 
-        const comment = await this.commentsQueryRepository.getCommentById(command.commentId);
+        const comment: CommentDocument | null = await this.commentsQueryRepository.getCommentById(command.commentId);
 
         if (!comment) {
             throw new NotFoundException(`Comment not found`);
         }
 
-        const user = await this.usersQueryRepository.getUserById(command.userId);
+        const user: UserOutputModel | null = await this.usersQueryRepository.getUserById(command.userId);
 
         if (!user) {
             throw new BadRequestException();
         }
 
-        const isLikeExist = await this.likeCommentQueryRepository.checkLike({
+        const isLikeExist: boolean = await this.likeCommentQueryRepository.checkLike({
             commentId: command.commentId,
             userId: user.id,
         });
 
         if (!isLikeExist) {
 
-            const newLike = {
+            const newLike: {
+                createdAt: number;
+                commentId: string;
+                login: string | undefined;
+                userId: string;
+                status: LIKE_STATUS
+            } = {
                 status: command.likeStatus.likeStatus,
                 userId: command.userId,
                 commentId: command.commentId,
@@ -68,7 +77,7 @@ export class CreateLikeForCommentUseCase implements ICommandHandler<CreateLikeFo
 
         } else {
 
-            const currentLike = await this.likeCommentQueryRepository.getLike(command.commentId, command.userId);
+            const currentLike: LikeCommentDocument | null = await this.likeCommentQueryRepository.getLike(command.commentId, command.userId);
 
             if (!currentLike) {
                 throw new BadRequestException();

@@ -4,7 +4,14 @@ import {PostsQueryRepository} from "../../infrastructure/posts.query-repository"
 import {CommentsQueryRepository} from "../../../comments/infrastructure/comments.query-repository";
 import {SortPostsDto} from "../models/input/sort-post.input.dto";
 import {LikesCommentQueryRepository} from "../../../likeComment/infrastructure/likes-comment.query-repository";
-import {PostCommentOutputModelMapper} from "../models/output/post-comment.output.model";
+import {
+    CommentsForPostOutputModel,
+    CommentsForPostOutputModelMapper
+} from "../models/output/comments-for-post-output.model";
+import {CommentDocument} from "../../../comments/domain/comment.entity";
+import {GetAllCommentsForPostOutputType} from "../../../blogs/api/models/types/getAllCommentsForPostOutputType.ts";
+import {PostDocument} from "../../domain/posts.entity";
+import {LIKE_STATUS} from "../../../../base/enum/enums";
 
 
 export class GetCommentsForPostUseCaseCommand {
@@ -24,26 +31,26 @@ export class GetCommentsForPostUseCase implements ICommandHandler<GetCommentsFor
     ) {
     }
 
-    async execute(command: GetCommentsForPostUseCaseCommand) {
+    async execute(command: GetCommentsForPostUseCaseCommand): Promise<GetAllCommentsForPostOutputType> {
 
-        const sortBy = command.sortData.sortBy ?? 'createdAt';
-        const sortDirection = command.sortData.sortDirection ?? 'desc';
-        const page = command.sortData.pageNumber ?? 1;
-        const size = command.sortData.pageSize ?? 10;
+        const sortBy: string = command.sortData.sortBy ?? 'createdAt';
+        const sortDirection: "asc" | "desc" = command.sortData.sortDirection ?? 'desc';
+        const page: number = command.sortData.pageNumber ?? 1;
+        const size: number = command.sortData.pageSize ?? 10;
 
-        const post = await this.postsQueryRepository.getPostById(command.postId);
+        const post: PostDocument | null = await this.postsQueryRepository.getPostById(command.postId);
 
         if (!post) {
             throw new NotFoundException(`Post not found`);
         }
 
-        const totalCount = await this.commentsQueryRepository.countByPostId(command.postId);
-        const pagesCount = Math.ceil(totalCount / +size);
+        const totalCount: number = await this.commentsQueryRepository.countByPostId(command.postId);
+        const pagesCount: number = Math.ceil(totalCount / +size);
 
-        const skip = (page - 1) * size;
+        const skip: number = (page - 1) * size;
 
-        const comments = await this.commentsQueryRepository
-            .findCommentssByPostIdPaginated(
+        const comments: CommentDocument[] = await this.commentsQueryRepository
+            .findCommentsByPostIdPaginated(
                 command.postId,
                 sortBy,
                 sortDirection,
@@ -52,19 +59,18 @@ export class GetCommentsForPostUseCase implements ICommandHandler<GetCommentsFor
             );
         let status;
 
-
-        const mappedComments = await Promise.all(comments.map(async (comment) => {
+        const mappedComments: CommentsForPostOutputModel[] = await Promise.all(comments.map(async (comment: CommentDocument): Promise<CommentsForPostOutputModel> => {
             const commentId = comment._id.toString()
-            console.log(comment)
+
             let commentLike;
 
             if (command.userId) {
                 commentLike = await this.likesCommentQueryRepository.getLike(commentId, command.userId);
             }
 
-            status = commentLike ? commentLike.status : 'None';
+            status = commentLike ? commentLike.status : LIKE_STATUS.NONE;
 
-            return PostCommentOutputModelMapper(comment, status);
+            return CommentsForPostOutputModelMapper(comment, status);
         }));
 
         return {

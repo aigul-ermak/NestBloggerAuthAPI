@@ -6,7 +6,7 @@ export type LikeCommentDocument = HydratedDocument<LikeComment>;
 
 @Schema()
 export class LikeComment {
-    @Prop({required: true, enum: LIKE_STATUS})
+    @Prop({required: true, type: String, enum: LIKE_STATUS, default: LIKE_STATUS.NONE})
     status: LIKE_STATUS;
 
     @Prop({required: true})

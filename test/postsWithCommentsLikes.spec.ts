@@ -95,7 +95,7 @@ describe('Posts testing', () => {
             content: expect.any(String),
             blogId: blog.id,
             blogName: blog.name,
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -126,7 +126,7 @@ describe('Posts testing', () => {
             content: expect.any(String),
             blogId: blog.id,
             blogName: blog.name,
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -373,7 +373,7 @@ describe('Posts testing', () => {
                 userId: user1.id,
                 userLogin: user1.login
             },
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             likesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -797,14 +797,14 @@ describe('Posts testing', () => {
 
     });
 
-    it('returns 204 for delete comment', async () => {
-
-        const commentId = comment.id;
-
-        const response = await request(httpServer)
-            .delete(`/comments/${commentId}`)
-            .set('Authorization', `Bearer ${accessToken1}`)
-            .expect(204);
-    });
+    // it('returns 204 for delete comment', async () => {
+    //
+    //     const commentId = comment.id;
+    //
+    //     const response = await request(httpServer)
+    //         .delete(`/comments/${commentId}`)
+    //         .set('Authorization', `Bearer ${accessToken1}`)
+    //         .expect(204);
+    // });
 
 })

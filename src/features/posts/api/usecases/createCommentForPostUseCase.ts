@@ -1,5 +1,5 @@
 import {CommandHandler, ICommandHandler} from "@nestjs/cqrs";
-import {BadRequestException, NotFoundException} from "@nestjs/common";
+import {BadRequestException, InternalServerErrorException, NotFoundException} from "@nestjs/common";
 import {PostsQueryRepository} from "../../infrastructure/posts.query-repository";
 import {UsersQueryRepository} from "../../../users/infrastructure/users.query-repository";
 import {CommentInputDto} from "../../../comments/api/model/input/comment-input.dto";
@@ -44,7 +44,7 @@ export class CreateCommentForPostUseCase implements ICommandHandler<CreateCommen
         }
 
         const newComment: {
-            createdAt: Date;
+            createdAt: number;
             likesCount: number;
             commentatorInfo: { userLogin: string; userId: string };
             dislikesCount: number;
@@ -57,7 +57,7 @@ export class CreateCommentForPostUseCase implements ICommandHandler<CreateCommen
                 userId: user.id,
                 userLogin: user.login
             },
-            createdAt: new Date(),
+            createdAt: Date.now(),
             likesCount: 0,
             dislikesCount: 0
         }
@@ -65,6 +65,9 @@ export class CreateCommentForPostUseCase implements ICommandHandler<CreateCommen
         const commentId: string = await this.commentRepository.createComment(newComment);
 
         const comment: CommentDocument | null = await this.commentQueryRepository.getCommentById(commentId);
+        if (!comment) {
+            throw new InternalServerErrorException(`Failed to retrieve the created comment`);
+        }
 
         return CommentOutputModelMapper(comment);
     }

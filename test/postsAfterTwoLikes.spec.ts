@@ -95,7 +95,7 @@ describe('Posts testing', () => {
             content: expect.any(String),
             blogId: blog.id,
             blogName: blog.name,
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -186,7 +186,7 @@ describe('Posts testing', () => {
             content: expect.any(String),
             blogId: blog.id,
             blogName: blog.name,
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
@@ -546,14 +546,14 @@ describe('Posts testing', () => {
             content: expect.any(String),
             blogId: blog.id,
             blogName: blog.name,
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             extendedLikesInfo: {
                 likesCount: 1,
                 dislikesCount: 0,
                 myStatus: "Like",
                 newestLikes: [
                     {
-                        addedAt: expect.any(String),
+                        createdAt: expect.any(Number),
                         userId: user1.id,
                         login: user1.login,
                     }
@@ -600,14 +600,14 @@ describe('Posts testing', () => {
             content: expect.any(String),
             blogId: blog.id,
             blogName: blog.name,
-            createdAt: expect.any(String),
+            createdAt: expect.any(Number),
             extendedLikesInfo: {
                 likesCount: 1,
                 dislikesCount: 0,
                 myStatus: "Like",
                 newestLikes: [
                     {
-                        addedAt: expect.any(String),
+                        createdAt: expect.any(Number),
                         userId: user1.id,
                         login: user1.login,
                     }

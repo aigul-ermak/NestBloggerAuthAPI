@@ -35,6 +35,7 @@ import {PostOutputModel} from "./models/output/postDbOutputModel";
 import {GetAllPostsForBlogOutputType} from "../../blogs/api/models/types/getAllPostsForBlogOutputType";
 import {GetAllCommentsForPostOutputType} from "../../blogs/api/models/types/getAllCommentsForPostOutputType.ts";
 import {Types} from "mongoose";
+import {CommentOutputModel} from "../../comments/api/model/output/comment-output.model";
 
 
 class GetCommentsPostUseCaseCommand {
@@ -125,14 +126,15 @@ export class PostsController {
         @Param('id') postId: string,
         @Body() comment: CommentInputDto,
         @Req() req: Request,
-    ): Promise<void> {
+    ): Promise<CommentOutputModel> {
         //const userId = req['userId'];
         const userId = req.user?.userId;
+
         if (!userId) {
             throw new UnauthorizedException('User ID is missing');
         }
 
-        await this.commandBus.execute(new CreateCommentForPostUseCaseCommand(postId, userId.toString(), comment));
+        return await this.commandBus.execute(new CreateCommentForPostUseCaseCommand(postId, userId, comment));
     }
 
     @Get(':id/comments')
@@ -162,6 +164,11 @@ export class PostsController {
         @Req() req: Request): Promise<GetAllPostsForBlogOutputType> {
 
         const userId = req['userId'];
+
+        if (!Types.ObjectId.isValid(userId)) {
+            throw new BadRequestException(`Invalid ID format`);
+        }
+        //const userId = req.user?.userId;
 
         return await this.commandBus.execute(new GetAllPostsUseCaseCommand(sortData, userId));
 

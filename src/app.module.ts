@@ -16,8 +16,6 @@ import {EmailModule} from "./features/email/email.module";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import configuration, {ConfigurationType} from "./settings/configuration";
 import {CreateUserUseCase} from "./features/users/api/usecases/createUserUseCase";
-import {CreateBlogUseCase} from "./features/blogs/api/usecases/createBlogUseCase";
-import {GetBlogByIdUseCase} from "./features/blogs/api/usecases/getBlogByIdUseCase";
 import {BlogsController} from "./features/blogs/api/blogs.controller";
 import {PostsController} from "./features/posts/api/posts.controller";
 import {BlogsRepository} from "./features/blogs/infrastructure/blogs.repository";
@@ -25,10 +23,7 @@ import {BlogsQueryRepository} from "./features/blogs/infrastructure/blogs.query-
 import {BlogsService} from "./features/blogs/application/blogs.service";
 import {BlogsModule} from "./features/blogs/blogs.module";
 import {Blog, BlogEntity} from "./features/blogs/domain/blog.entity";
-import {GetAllBlogsUseCase} from "./features/blogs/api/usecases/getAllBlogsUseCase";
-import {DeleteBlogByIdUseCase} from "./features/blogs/api/usecases/deleteBlogByIdUseCase";
 import {CqrsModule} from "@nestjs/cqrs";
-import {UpdateBlogUseCase} from "./features/blogs/api/usecases/updateBlogUseCase";
 import {Post, PostsEntity} from "./features/posts/domain/posts.entity";
 // import {CreatePostUseCase} from "./features/posts/api/usecases/createPostUseCase";
 import {PostsService} from "./features/posts/application/posts.service";
@@ -77,8 +72,7 @@ import {
 } from "./features/security/api/usecases/getAllDevicesWithActiveSessionsUseCase";
 import {DeleteDeviceSessionUseCase} from "./features/auth/api/usecases/deleteDeviceSessionUseCase";
 import {DeleteOtherSessionUseCase} from "./features/security/api/usecases/deleteOtherSessionsUseCase";
-import {ThrottlerGuard, ThrottlerModule} from "@nestjs/throttler";
-import {APP_GUARD} from "@nestjs/core";
+import {ThrottlerModule} from "@nestjs/throttler";
 import {PasswordRecoveryUseCase} from "./features/auth/api/usecases/passwordRecoveryUseCase";
 import {CreateNewPasswordUseCase} from "./features/auth/api/usecases/createNewPasswordUseCase";
 
@@ -105,6 +99,8 @@ const useCases = [CreateUserUseCase, GetPostByIdUseCase,
             envFilePath: ['.env.development.local', '.env.development', '.env'],
         }),
         MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
             useFactory: (configService: ConfigService<ConfigurationType, true>) => {
                 const environmentSettings = configService.get('environmentSettings', {
                     infer: true,
@@ -121,7 +117,6 @@ const useCases = [CreateUserUseCase, GetPostByIdUseCase,
                     uri
                 };
             },
-            inject: [ConfigService],
         }),
         MongooseModule.forFeature([
             {name: User.name, schema: UsersEntity},

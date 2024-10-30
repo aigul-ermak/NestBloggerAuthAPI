@@ -5,6 +5,7 @@ import {PostLikeOutputModelMapper, PostOutputModel} from "../models/output/postD
 import {LikesQueryRepository} from "../../../likePost/infrastructure/likes.query-repository";
 import {PostDocument} from "../../domain/posts.entity";
 import {GetAllPostsForBlogOutputType} from "../../../blogs/api/models/types/getAllPostsForBlogOutputType";
+import {LikeDocument} from "../../../likePost/domain/like.entity";
 
 
 export class GetAllPostsUseCaseCommand {
@@ -38,12 +39,19 @@ export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsUseCaseCom
 
         const mappedPosts = await Promise.all(posts.map(async (post: PostDocument): Promise<PostOutputModel> => {
             const postId: string = post._id.toString()
-            const newestLikes = await this.likesQueryRepository.getNewestLikesForPost(postId);
-            console.log("newestLikes", newestLikes)
-            const postLike = await this.likesQueryRepository.getLike(postId, command.userId);
-            console.log("postLike", postLike)
-            //const status: LIKE_STATUS = postLike ? postLike.status : LIKE_STATUS.NONE;
-            const status = 'None';
+
+            const newestLikes: {
+                createdAt: Date;
+                login: string;
+                userId: string
+            }[] = await this.likesQueryRepository.getNewestLikesForPost(postId);
+            console.error("userID", command.userId)
+
+            const likeToPost: LikeDocument | null = await this.likesQueryRepository.getLike(postId, command.userId);
+
+            console.error("postLike", likeToPost);
+            const status = likeToPost ? likeToPost.status : 'None';
+
             return PostLikeOutputModelMapper(post, newestLikes, status);
         }));
 

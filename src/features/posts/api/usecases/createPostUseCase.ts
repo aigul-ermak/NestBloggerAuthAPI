@@ -45,7 +45,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostUseCaseComma
 
         const createdPost: CreatePostMdOutputType = await this.postsRepository.insert(newCreatePost);
 
-        const post: PostDocument = await this.postsQueryRepository.getPostById(createdPost.id);
+        const post: PostDocument | null = await this.postsQueryRepository.getPostById(createdPost.id);
 
         if (!post) {
             throw new NotFoundException(`Post not found`);

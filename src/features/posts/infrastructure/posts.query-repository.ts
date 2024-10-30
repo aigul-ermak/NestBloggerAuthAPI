@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model, SortOrder} from 'mongoose';
+import {Model, SortOrder, Types} from 'mongoose';
 import {Post, PostDocument} from '../domain/posts.entity';
 import {PostMdOutputType} from "../api/models/types/output/postMdOutputType";
 
@@ -14,7 +14,7 @@ export class PostsQueryRepository {
         return this.postModel.find().exec();
     }
 
-    async getPostById(id: string): Promise<PostMdOutputType> {
+    async getPostById(id: string): Promise<PostMdOutputType | null> {
         const result = await this.postModel.findById(id).exec();
         return result as unknown as PostMdOutputType;
     }

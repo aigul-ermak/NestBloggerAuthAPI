@@ -5,7 +5,7 @@ export type ConfigurationType = ReturnType<typeof getConfig>;
 export enum Environments {
     PRODUCTION = "PRODUCTION",
     STAGING = "STAGING",
-    TEST = "TEST",
+    TEST = "test",
     DEVELOPMENT = "DEVELOPMENT",
 }
 

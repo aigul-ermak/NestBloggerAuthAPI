@@ -24,12 +24,16 @@ jobs:
 
       # Step 3: Run e2e tests
       - name: Test
+        env:
+          ENV: TEST
+          MONGO_CONNECTION_URI_FOR_TESTS: ${{ secrets.MONGO_CONNECTION_URI_FOR_TESTS }}
         run: |
           echo "Running End-to-End Tests"
           yarn test:e2e || echo "Tests failed with exit code $?"
-          continue-on-error: true
+        continue-on-error: true
 
   Deploy-Preview:
+    name: Deploy Vercel Preview
     runs-on: ubuntu-latest
     needs: Tests
     steps:
@@ -43,12 +47,18 @@ jobs:
 
       # Step 3: Pull Vercel Environment Information
       - name: Pull Vercel Environment Information
+        env:
+          MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       # Step 4: Build Project Artifacts
       - name: Build Project Artifacts
+        env:
+          MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       # Step 5: Deploy Project Artifacts to Vercel
       - name: Deploy Project Artifacts to Vercel
+        env:
+          MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}

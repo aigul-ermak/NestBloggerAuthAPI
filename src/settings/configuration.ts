@@ -5,7 +5,7 @@ export type ConfigurationType = ReturnType<typeof getConfig>;
 export enum Environments {
     PRODUCTION = "PRODUCTION",
     STAGING = "STAGING",
-    TEST = "TEST",
+    TEST = "test",
     DEVELOPMENT = "DEVELOPMENT",
 }
 
@@ -13,6 +13,8 @@ const getConfig = (
     environmentVariables: EnvironmentVariable,
     currentEnvironment: Environments,
 ) => {
+    console.log(`Parsed Current Environment: ${currentEnvironment}`);
+
     return {
         apiSettings: {
             PORT: Number.parseInt(environmentVariables.PORT || '3000'),
@@ -57,8 +59,8 @@ const getConfig = (
 export default () => {
     const environmentVariables = process.env;
 
-    const currentEnvironment: Environments =
-        environmentVariables.ENV as Environments;
-
+    const currentEnvironment: Environments = (environmentVariables.NODE_ENV as Environments) || Environments.DEVELOPMENT;
+    //TODO delete
+    console.log(`Current Environment: ${currentEnvironment}`);
     return getConfig(environmentVariables, currentEnvironment);
 };

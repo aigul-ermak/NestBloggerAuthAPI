@@ -96,7 +96,9 @@ const useCases = [CreateUserUseCase, GetPostByIdUseCase,
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],
-            envFilePath: ['.env.development.local', '.env.development', '.env'],
+            envFilePath: process.env.NODE_ENV === 'test'
+                ? ['.env.test.local', '.env.test', '.env']
+                : ['.env.development.local', '.env.development', '.env'],
         }),
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
@@ -112,6 +114,10 @@ const useCases = [CreateUserUseCase, GetPostByIdUseCase,
                 const uri = environmentSettings.isTesting
                     ? databaseSettings.MONGO_CONNECTION_URI_FOR_TESTS
                     : databaseSettings.MONGO_CONNECTION_URI;
+
+                //TODO delete
+                console.log(`Chosen Database URI: ${uri}`);
+                console.log(`Environment is Testing: ${environmentSettings.isTesting}`);
 
                 return {
                     uri

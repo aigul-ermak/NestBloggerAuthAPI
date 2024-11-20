@@ -36,8 +36,8 @@ export const CommentOutputModelMapper = (newComment: CommentDocument): CommentOu
 }
 
 export const CommentLikeOutputModelMapper = (newComment: any, status: string): CommentOutputModel => {
-    //TODO type?
-    const outputModel = new CommentOutputModel();
+
+    const outputModel: CommentOutputModel = new CommentOutputModel();
 
     outputModel.id = newComment._id.toString();
     outputModel.content = newComment.content;

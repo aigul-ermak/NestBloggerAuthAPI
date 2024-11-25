@@ -11,13 +11,10 @@ async function bootstrap() {
 
     applyAppSettings(app);
 
-    // const configService = app.get(ConfigService<ConfigurationType, true>);
+
     const configService = app.get<ConfigService<ConfigurationType>>(ConfigService);
 
     const apiSettings = configService.get('apiSettings');
-    // const environmentSettings = configService.get('environmentSettings', {
-    //     infer: true,
-    // });
 
     const port = apiSettings?.PORT || 3000;
 

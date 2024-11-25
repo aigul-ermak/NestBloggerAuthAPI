@@ -11,7 +11,6 @@ async function bootstrap() {
 
     applyAppSettings(app);
 
-
     const configService = app.get<ConfigService<ConfigurationType>>(ConfigService);
 
     const apiSettings = configService.get('apiSettings');

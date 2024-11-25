@@ -6,6 +6,8 @@
 .idea/
 .env
 
+project.json
+
 # Logs
 logs
 *.log

@@ -14,15 +14,15 @@ async function bootstrap() {
     // const configService = app.get(ConfigService<ConfigurationType, true>);
     const configService = app.get<ConfigService<ConfigurationType>>(ConfigService);
 
-    const apiSettings = configService.get('apiSettings', {infer: true});
-    const environmentSettings = configService.get('environmentSettings', {
-        infer: true,
-    });
+    // const apiSettings = configService.get('apiSettings', {infer: true});
+    // const environmentSettings = configService.get('environmentSettings', {
+    //     infer: true,
+    // });
 
     const port = appSettings.api.APP_PORT || 3000;
 
     await app.listen(appSettings.api.APP_PORT, () => {
-        console.log('App starting listen port: ', appSettings.api.APP_PORT);
+        console.log('App starting listen port: ', port);
         // console.log('ENV: ', apiSettings!.environmentSettings);
     });
 }

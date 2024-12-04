@@ -6,7 +6,7 @@
 .idea/
 .env
 
-project.json
+.vercel/
 
 # Logs
 logs

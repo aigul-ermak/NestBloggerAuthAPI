@@ -29,6 +29,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+
       # Step 4: Run e2e tests
       - name: Test
         env:

@@ -1,13 +1,13 @@
-name: GitHub Actions Vercel Preview Deployment
-
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - staging
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   Tests:
@@ -18,11 +18,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Step 2: Install dependencies
-      - name: Install dependencies
-        run: yarn
+      # Step 2: Enable Corepack and Use Specific Yarn Version
+      - name: Enable Corepack
+        run: corepack enable
 
-      # Step 3: Run e2e tests
+      - name: Use Specific Yarn Version
+        run: corepack prepare yarn@4.4.0 --activate
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # Step 4: Run e2e tests
       - name: Test
         env:
           ENV: TEST

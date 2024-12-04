@@ -27,7 +27,7 @@ jobs:
 
       # Step 3: Install dependencies
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       # Step 4: Run e2e tests
       - name: Test

@@ -14,7 +14,7 @@ jobs:
     name: Run End-to-End Tests
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out the code
+      # Step 1: Check out the cod
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -27,7 +27,8 @@ jobs:
 
       # Step 3: Install dependencies
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
+
 
       # Step 4: Run e2e tests
       - name: Test

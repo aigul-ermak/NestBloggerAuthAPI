@@ -17,7 +17,7 @@ const getConfig = (
 
     return {
         apiSettings: {
-            PORT: Number.parseInt(environmentVariables.PORT || '3000'),
+            PORT: Number.parseInt(environmentVariables.PORT || '3001'),
             LOCAL_HOST: environmentVariables.LOCAL_HOST || 'http://localhost:3007',
             PUBLIC_FRIEND_FRONT_URL: environmentVariables.PUBLIC_FRIEND_FRONT_URL,
         },

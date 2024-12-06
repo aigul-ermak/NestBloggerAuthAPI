@@ -15,11 +15,10 @@ async function bootstrap() {
 
     const apiSettings = configService.get('apiSettings');
 
-    const port = apiSettings?.PORT || 3000;
+    const port = apiSettings?.PORT || 3001;
 
-    await app.listen(appSettings.api.APP_PORT, () => {
+    await app.listen(port, () => {
         console.log('App starting listen port: ', port);
-        // console.log('ENV: ', apiSettings!.environmentSettings);
     });
 }
 

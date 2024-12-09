@@ -45,12 +45,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: aigul-ermak/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: staging
           base: main
-          title: 'Merge staging into main'
+          title: 'Merge staging into ma in'
           body: |
             This pull request merges changes from staging into main after successful tests.
           draft: false

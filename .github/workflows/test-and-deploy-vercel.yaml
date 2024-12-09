@@ -28,7 +28,8 @@ jobs:
       # Step 4: Run e2e tests
       - name: Test
         env:
-          ENV: TEST
+          HTTP_BASIC_USER: ${{ secrets.HTTP_BASIC_USER }}
+          HTTP_BASIC_PASS: ${{ secrets.HTTP_BASIC_PASS }}
           MONGO_CONNECTION_URI_FOR_TESTS: ${{ secrets.MONGO_CONNECTION_URI_FOR_TESTS }}
         run: yarn test:e2e
 

@@ -44,7 +44,7 @@ jobs:
         with:
           ref: main
 
-      # Step 2: Merge staging into ma in
+      # Step 2: Merge staging into main
       - name: Merge staging into main
         run: |
           git config --global user.name "aigul-ermak"

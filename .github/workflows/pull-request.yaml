@@ -1,0 +1,30 @@
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    branches:
+      - staging
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      CreatePullRequest:
+        # Step 1: Checkout the repository
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+          if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        # Step 2: Create Pull Request
+        - name: Create Pull Request
+          id: create_pr
+          uses: peter-evans/create-pull-request@v5
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            branch: staging
+            base: main
+            title: 'Merge staging into main'
+            body: |
+              This pull request merges changes from staging into main after successful tests.
+            draft: false

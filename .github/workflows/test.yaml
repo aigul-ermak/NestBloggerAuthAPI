@@ -10,23 +10,18 @@ jobs:
     name: Run End-to-End Tests
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out the code
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # Step 2: Enable Corepack
       - name: Enable Corepack
         run: corepack enable
 
-      # Step 3: Use Specific Yarn Version
       - name: Use Specific Yarn Version
         run: corepack prepare yarn@4.4.0 --activate
 
-      # Step 4: Install dependencies
       - name: Install dependencies
         run: yarn install
 
-      # Step 5: Run e2e tests
       - name: Run Tests
         env:
           HTTP_BASIC_USER: ${{ secrets.HTTP_BASIC_USER }}

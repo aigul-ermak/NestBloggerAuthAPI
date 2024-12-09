@@ -2,7 +2,8 @@ name: Deploy Workflow
 
 on:
   workflow_run:
-    workflows: [ "Pull Request Workflow" ]
+    workflows:
+      - Pull Request Workflow
     types:
       - completed
 
@@ -12,26 +13,21 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      # Step 1: Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Install GitHub CLI
       - name: Install GitHub CLI
         run: sudo apt-get install gh
 
-      # Step 3: Authenticate GitHub CLI
       - name: Authenticate GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-      # Step 4: Merge Pull Request
       - name: Merge Pull Request
         run: |
-          gh pr merge ${{ github.event.inputs.pr_number }} --merge --auto -R aigul-ermak/NestBloggerAuthAPI
+          gh pr merge $(gh pr list --state open --json number --jq ".[0].number") --merge --auto -R aigul-ermak/NestBloggerAuthAPI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 5: Deploy Application
       - name: Deploy Application
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VS_SSH_KEY }}

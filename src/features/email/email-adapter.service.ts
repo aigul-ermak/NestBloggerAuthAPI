@@ -11,6 +11,9 @@ export class EmailAdapter {
         const user = this.configService.get<string>('emailSettings.EMAIL_USER');
         const pass = this.configService.get<string>('emailSettings.EMAIL_PASS');
 
+        console.log('Email User:', user);
+        console.log('Email Pass:', pass ? '****' : 'Not Set');
+
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {

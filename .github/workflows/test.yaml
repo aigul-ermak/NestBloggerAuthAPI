@@ -1,0 +1,32 @@
+name: Test Workflow
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  Tests:
+    name: Run End-to-End Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Use Specific Yarn Version
+        run: corepack prepare yarn@4.4.0 --activate
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Tests
+        env:
+          HTTP_BASIC_USER: ${{ secrets.HTTP_BASIC_USER }}
+          HTTP_BASIC_PASS: ${{ secrets.HTTP_BASIC_PASS }}
+          MONGO_CONNECTION_URI_FOR_TESTS: ${{ secrets.MONGO_CONNECTION_URI_FOR_TESTS }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        run: yarn test:e2e

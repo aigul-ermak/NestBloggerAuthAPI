@@ -31,6 +31,8 @@ jobs:
           HTTP_BASIC_USER: ${{ secrets.HTTP_BASIC_USER }}
           HTTP_BASIC_PASS: ${{ secrets.HTTP_BASIC_PASS }}
           MONGO_CONNECTION_URI_FOR_TESTS: ${{ secrets.MONGO_CONNECTION_URI_FOR_TESTS }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         run: yarn test:e2e
 
   Deploy:
@@ -55,12 +57,11 @@ jobs:
 
       # Step 3: Deploy to Virtual Server
       - name: Deploy Application
+
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VS_SSH_KEY }}
           HOST: ${{ secrets.VIRTUAL_SERVER_HOST }}
           USER: ${{ secrets.VIRTUAL_SERVER_USER }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         run: |
           echo "Deploying to Virtual Server"
           ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $USER@$HOST << 'EOF'

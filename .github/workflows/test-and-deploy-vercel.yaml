@@ -44,10 +44,10 @@ jobs:
         with:
           ref: main
 
-      # Step 2: Merge staging into main
+      # Step 2: Merge staging into ma in
       - name: Merge staging into main
         run: |
-          git config --global user.name "Your GitHub Actions Bot"
+          git config --global user.name "aigul-ermak"
           git config --global user.email "aigul.erma@gmail.com"
           git checkout main
           git merge staging

@@ -44,34 +44,33 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Fetch all branches
-      - name: Fetch all branches
-        run: git fetch origin
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: staging
+          base: main
+          title: 'Merge staging into main'
+          body: |
+            This pull request merges changes from staging into main after successful tests.
+          draft: false
 
-      # Step 2: Checkout main branch
-      - name: Checkout main branch
-        run: git checkout main
-
-      # Step 3: Merge staging into main
-      - name: Merge staging into main
+      - name: Merge Pull Request
         run: |
-          git config --global user.name "aigul-ermak"
-          git config --global user.email "aigul.erma@gmail.com"         
-          git merge origin/staging
-          git push origin main
+          gh pr merge --merge --auto -R aigul-ermak/NestBloggerAuthAPI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Step 3: Deploy to Virtual Server
       - name: Deploy Application
-
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VS_SSH_KEY }}
           HOST: ${{ secrets.VIRTUAL_SERVER_HOST }}
           USER: ${{ secrets.VIRTUAL_SERVER_USER }}
         run: |
-          echo "Deploying to Virtual Server"
           ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $USER@$HOST << 'EOF'
-            cd /home/projects/NestBloggerAuthAPI
-            git pull origin main
-            yarn install --production
-            pm2 restart NestBloggerAuthAPI
+             cd /home/projects/NestBloggerAuthAPI
+             git pull origin main
+             yarn install --production
+             pm2 restart NestBloggerAuthAPI
           EOF   

@@ -5,10 +5,6 @@ on:
     branches:
       - staging
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 jobs:
   Tests:
     name: Run End-to-End Tests
@@ -29,44 +25,44 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-
       # Step 4: Run e2e tests
       - name: Test
         env:
           ENV: TEST
           MONGO_CONNECTION_URI_FOR_TESTS: ${{ secrets.MONGO_CONNECTION_URI_FOR_TESTS }}
-        run: |
-          echo "Running End-to-End Tests"
-          yarn test:e2e || echo "Tests failed with exit code $?"
-        continue-on-error: true
+        run: yarn test:e2e
 
-  Deploy-Preview:
-    name: Deploy Vercel Preview
-    runs-on: ubuntu-latest
+  Deploy:
+    name: Deploy To Virtual Server
     needs: Tests
+    runs-on: ubuntu-latest
     steps:
-      # Step 1: Check out the code
-      - name: Checkout code
+      # Step 1: Checkout main branch
+      - name: Checkout main branch
         uses: actions/checkout@v3
+        with:
+          ref: main
 
-      # Step 2: Install Vercel CLI
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      # Step 2: Merge staging into main
+      - name: Merge staging into main
+        run: |
+          git config --global user.name "Your GitHub Actions Bot"
+          git config --global user.email "aigul.erma@gmail.com"
+          git checkout main
+          git merge staging
+          git push origin main
 
-      # Step 3: Pull Vercel Environment Information
-      - name: Pull Vercel Environment Information
+      # Step 3: Deploy to Virtual Server
+      - name: Deploy Application
         env:
-          MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
-      # Step 4: Build Project Artifacts
-      - name: Build Project Artifacts
-        env:
-          MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      # Step 5: Deploy Project Artifacts to Vercel
-      - name: Deploy Project Artifacts to Vercel
-        env:
-          MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.VS_SSH_KEY }}
+          HOST: ${{ secrets.VIRTUAL_SERVER_HOST }}
+          USER: ${{ secrets.VIRTUAL_SERVER_USER }}
+        run: |
+          echo "Deploying to Virtual Server"
+          ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY $USER@$HOST << 'EOF'
+            cd /home/projects/NestBloggerAuthAPI
+            git pull origin main
+            yarn install --production
+            pm2 restart NestBloggerAuthAPI
+          EOF

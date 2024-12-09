@@ -40,22 +40,23 @@ jobs:
     needs: Tests
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Fetch all branches
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Fetch all branches
       - name: Fetch all branches
         run: git fetch origin
 
       # Step 2: Checkout main branch
       - name: Checkout main branch
-        uses: actions/checkout@v3
-        with:
-          ref: main
+        run: git checkout main
 
       # Step 3: Merge staging into main
       - name: Merge staging into main
         run: |
           git config --global user.name "aigul-ermak"
-          git config --global user.email "aigul.erma@gmail.com"
-          git checkout main
+          git config --global user.email "aigul.erma@gmail.com"         
           git merge origin/staging
           git push origin main
 

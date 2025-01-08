@@ -35,4 +35,23 @@ The API is hosted at: http://5.253.188.129:3001
 
 ## **Users API**
 
-The **Users API** provides endpoints for managing user resources, including retrieving, creating, and deleting users.
+## 1. Get All Users
+**Method:** `GET`  
+**Endpoint:** `/users`  
+**Description:** Retrieve a list of all users.
+
+### Response
+**Success:** `200 OK`  
+```json
+[
+  {
+    "id": "user-id-1",
+    "email": "user1@example.com",
+    "createdAt": "2023-01-01T12:00:00Z"
+  },
+  {
+    "id": "user-id-2",
+    "email": "user2@example.com",
+    "createdAt": "2023-01-02T12:00:00Z"
+  }
+]

@@ -1,16 +1,28 @@
-# Bloggers Platform 
+# NestJS Authentication API
 
 API implementation based on Swagger for a bloggers platform with authentication, refresh tokens, device management, and IP restriction.
 
-## Features:
-
-
 ## Tech Stack
 - Backend: Node.js, NestJS
-- Database: MongoDB
+- Database: MongoDB, MongoDB Atlas, Mongoose
 
-## Setup
-To run the project, clone the repository and follow the instructions in the README file.
+## API Testing Tools
+- Postman: Used to test API endpoints and validate functionality.
 
-Contributions are welcome!
+## Deployment
+- The application is designed to be deployed on a Virtual Private Server (VPS).
+- GitHub Actions is used for CI/CD to automate testing
 
+## Features:
+
+## API Endpoints
+Method	Endpoint	Description
+POST	/auth/registration	Register a new user
+POST	/auth/registration-confirmation	Confirm user registration
+POST	/auth/registration-email-resending	Resend confirmation email
+POST	/auth/login	Login and receive access/refresh tokens
+POST	/auth/refresh-token	Refresh access and refresh tokens
+POST	/auth/logout	Logout and invalidate refresh token
+POST	/auth/password-recovery	Initiate password recovery
+POST	/auth/new-password	Set a new password using recovery code
+GET	/auth/me	Get details of the currently logged-in user

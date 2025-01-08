@@ -15,6 +15,9 @@ API implementation based on Swagger for a bloggers platform with authentication,
 
 ## Features:
 
+## Base URL 
+The API is hosted at: http://5.253.188.129:3001
+
 ## API Endpoints
 Method	Endpoint	Description
 POST	/auth/registration	Register a new user
